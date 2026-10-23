@@ -1,9 +1,9 @@
 ﻿#include "main.h"
+#include <print>
 
-using namespace std;
 
 int main()
 {
-	cout << "Hello CMake." << endl;
+	std::cout << "Hello CMake." << std::endl;
 	return 0;
 }

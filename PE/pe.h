@@ -4,6 +4,7 @@
 
 class PE64 {
 
+public:
     PE64() = default;
     ~PE64() = default;
 
@@ -23,8 +24,10 @@ public:
         return p_baseAddress;
     }
 
+    QWORD getNtHeaderAddress(){
 
-
+        return p_baseAddress + static_cast<QWORD>(dos_header_.e_lfanew);
+    }
 
 };
 
