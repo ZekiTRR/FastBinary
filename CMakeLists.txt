@@ -28,20 +28,19 @@ find_package(Qt6 6.12 REQUIRED COMPONENTS Widgets)
 # Добавьте источник в исполняемый файл этого проекта.
 add_executable (FastBinary
         "main.cpp"
-        "main.h"
         PE/pe.cpp
         PE/pe.h
         WINAPI/TYPES.h
+        PE/Memory/memory.cpp
+        PE/Memory/memory.h
 )
 
 set_property(TARGET FastBinary PROPERTY CXX_STANDARD 26)
 
 # Максимальный уровень предупреждений, но без превращения их в ошибки.
-if(MSVC)
-    target_compile_options(FastBinary PRIVATE /W4)
-else()
-    target_compile_options(FastBinary PRIVATE -Wall -Wextra -Wpedantic)
-endif()
+target_compile_options(FastBinary PRIVATE /W4)
+target_compile_options(FastBinary PRIVATE $<$<CONFIG:Debug>:/DEBUG /OPT:REF /OPT:ICF>)
+
 
 # Корень проекта в путях включений, чтобы работали include вида "WINAPI/TYPES.h"
 target_include_directories(FastBinary PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

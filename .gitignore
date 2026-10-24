@@ -70,5 +70,5 @@ Testing/
 # Project-specific
 out/*
 cmake-build-*/
-.vs/
-.idea/
+.vs/*
+.idea/*
