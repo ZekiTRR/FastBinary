@@ -1,43 +1,85 @@
 #pragma once
 
-#include <vector>
+#include <string>
+#include <optional>
+#include <expected>
 
 #include "Memory/memory.h"
 #include "WINAPI/TYPES.h"
 
-class PE64 {
+class PE {
 
 public:
-    PE64() = default;
-    ~PE64() = default;
+
+    // Битность образа по Magic из OptionalHeader: 0x010B - PE32 (32 бита), 0x020B - PE32+ (64 бита)
+    enum class Format {
+        Unknown, // Не PE или не удалось спарсить
+        PE32, // x86
+        PE32Plus // x64
+    };
+
+    // Конструктор сразу парсит структуру PE из загруженного в Memory буфера.
+    // Все проверки - внутри structure_parse.
+    explicit PE(const Memory& memory) {
+        if (auto result = structure_parse(memory); !result) {
+            parse_error_ = std::move(result.error());
+        }
+    }
+
 
 private:
 
-    _IMAGE_DOS_HEADER dos_header_;
-    _IMAGE_NT_HEADERS64 nt_header_; // DOS_HEADER.e_lfanew -> NT_HEADER
-    _IMAGE_OPTIONAL_HEADER64 optional_header_;
+    // Главная функция парсинга: внутри все проверки (MZ, e_lfanew, PE\0\0, Magic битности)
+    // и заполнение заголовков. Читает только, ничего в объекте memory не меняет.
+    std::expected<void, std::string> structure_parse(const Memory& memory);
 
-    QWORD const p_baseAddress {optional_header_.ImageBase};
+    _IMAGE_DOS_HEADER         dos_header_ {};
+    _IMAGE_FILE_HEADER        file_header_ {};
+    IMAGE_OPTIONAL_HEADER32   optional_header32_ {}; // валиден при format_ == Format::PE32
+    _IMAGE_OPTIONAL_HEADER64  optional_header64_ {}; // валиден при format_ == Format::PE32Plus
+
+    Format format_ { Format::Unknown };
+    QWORD nt_header_offset_ { 0 }; // e_lfanew - оффсет NT-заголовков от начала файла
+    QWORD base_address_ { 0 };     // ImageBase из OptionalHeader
+    std::optional<std::string> parse_error_;
 
 
 public:
 
+    // Спарсилась ли структура (конструктор парсит сразу - здесь результат этого парсинга)
     [[nodiscard]]
-    QWORD getBaseAddress() const{
-
-        return p_baseAddress;
+    bool isParsed() const noexcept {
+        return !parse_error_.has_value();
     }
 
-
+    // Причина неудачного парсинга (пустая, если isParsed() == true)
     [[nodiscard]]
-    QWORD getNtHeaderAddress() const{
-
-        return p_baseAddress + static_cast<QWORD>(dos_header_.e_lfanew);
+    const std::optional<std::string>& parseError() const noexcept {
+        return parse_error_;
     }
 
+    // Битность образа
+    [[nodiscard]]
+    Format format() const noexcept {
+        return format_;
+    }
 
-// От PE + 2 байта пустых и следующий байт  если там 64 -> PE64
-bool b_IsPE64(Memory& memory) const;
-	
+    // 64-битный ли образ (PE32+)
+    [[nodiscard]]
+    bool b_IsPE64() const noexcept {
+        return format_ == Format::PE32Plus;
+    }
+
+    // ImageBase из OptionalHeader
+    [[nodiscard]]
+    QWORD qw_getBaseAddress() const noexcept {
+        return base_address_;
+    }
+
+    // Оффсет NT-заголовков от начала файла (e_lfanew из DOS-заголовка)
+    [[nodiscard]]
+    QWORD qw_getNtHeaderAddress() const noexcept {
+        return nt_header_offset_;
+    }
+
 };
-

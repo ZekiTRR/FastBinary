@@ -72,3 +72,7 @@ out/*
 cmake-build-*/
 .vs/*
 .idea/*
+
+*.sqlite
+*.db
+/.vs/

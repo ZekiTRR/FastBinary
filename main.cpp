@@ -8,26 +8,32 @@
 int main()
 {
 
-	Memory memory;
-	PE64 pe;
+	// В Qt объект создаётся при бросании файла: путь достаётся из дропа и сразу идёт в конструктор.
+	// Здесь для примера путь задаётся вручную.
+	Memory memory(L"parser.exe");
 
-	if (memory.loadFile(L"parser.exe").has_value()) {
-		std::print("File loaded successfully. Buffer size: {} bytes\n", memory.getBuffer().size());
-
-
-
-		auto test = pe.b_IsPE64(memory);
-		if (test) {
-			std::print("The file is a PE64 executable.\n");
-		} else {
-			std::print("The file is NOT a PE64 executable.\n");
-		}
-
-
-	} else {
-		std::cerr << memory.loadFile(L"parser.exe").error() << std::endl;
+	if (!memory.isLoaded()) {
+		std::cerr << memory.loadError().value_or("Unknown error") << std::endl;
 		return 1;
 	}
+
+	std::print("File loaded successfully. Buffer size: {} bytes\n", memory.getBuffer().size());
+
+	// Конструктор PE сразу делает парс структуры
+	PE pe(memory);
+
+	if (!pe.isParsed()) {
+		std::cerr << pe.parseError().value_or("Unknown error") << std::endl;
+		return 1;
+	}
+
+	if (pe.b_IsPE64()) {
+		std::print("The file is a PE64 (PE32+) executable.\n");
+	} else {
+		std::print("The file is a PE32 executable.\n");
+	}
+
+	std::print("NT headers offset: {}, image base: 0x{:X}\n", pe.qw_getNtHeaderAddress(), pe.qw_getBaseAddress());
 
 
 
