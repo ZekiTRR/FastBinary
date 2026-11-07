@@ -2,6 +2,7 @@
 
 #include <cstring>
 #include <format>
+#include <span>
 #include <string>
 
 
@@ -9,7 +10,7 @@
 // memcpy вместо reinterpret_cast - данные в буфере не выровнены, а разыменование
 // невыровненного указателя - UB.
 template <typename T>
-static std::expected<T, std::string> read_structure(const std::vector<unsigned char>& buffer, const QWORD offset) {
+static std::expected<T, std::string> read_structure(std::span<const unsigned char> buffer, const QWORD offset) {
     if (offset > buffer.size() || sizeof(T) > buffer.size() - offset) {
         return std::unexpected("Buffer is too small: no room for a structure at offset " + std::to_string(offset));
     }
@@ -19,10 +20,7 @@ static std::expected<T, std::string> read_structure(const std::vector<unsigned c
     return value;
 }
 
-
-std::expected<void, std::string> PE::structure_parse(const Memory& memory) {
-	// Создаётся указатель, по идеи нет копирования
-	const auto& buffer = memory.getBuffer();
+std::expected<void, std::string> PE::structure_parse(std::span<const unsigned char> buffer) {
 
 	// 2. Размер файла должен вмещать DOS-заголовок
 	if (buffer.size() < sizeof(_IMAGE_DOS_HEADER)) {

@@ -8,25 +8,27 @@
 int main()
 {
 
-	// В Qt объект создаётся при бросании файла: путь достаётся из дропа и сразу идёт в конструктор.
+	// В Qt объект создаётся при бросании файла: путь достаётся из дропа и сразу идёт в фабрику.
 	// Здесь для примера путь задаётся вручную.
-	Memory memory(L"parser.exe");
+	auto memory_result = Memory::load(L"parser.exe");
 
-	if (!memory.isLoaded()) {
-		std::cerr << memory.loadError().value_or("Unknown error") << std::endl;
+	if (!memory_result) {
+		std::cerr << memory_result.error() << std::endl;
 		return 1;
 	}
+	const Memory& memory = *memory_result;
 
 	std::print("File's SHA256: {}\n", memory.getHash256());
 	std::print("File's MD5: {}\n", memory.getHashMD5());
 
-	// Конструктор PE сразу делает парс структур
-	PE pe(memory);
+	// Фабрика PE сразу делает парс структур
+	auto pe_result = PE::create(memory.getBuffer());
 
-	if (!pe.isParsed()) {
-		std::cerr << pe.parseError().value_or("Unknown error") << std::endl;
+	if (!pe_result) {
+		std::cerr << pe_result.error() << std::endl;
 		return 1;
 	}
+	const PE& pe = *pe_result;
 
 	if (pe.b_IsPE64()) {
 		std::print("The file is a PE64 (PE32+) executable.\n");

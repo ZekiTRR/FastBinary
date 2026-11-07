@@ -4,53 +4,38 @@
 #include <string>
 #include <optional>
 #include <expected>
+#include <span>
 
 #include "PE/hash.h"
 #include "WINAPI/TYPES.h"
 
 class Memory {
 
-public:
-
-    // Объект создаётся при бросании файла в Qt: путь достаётся из дропа
-    // и сразу передаётся в конструктор, который сразу же загружает файл.
-    explicit Memory(const std::wstring& path) {
-        if (auto result = loadFile(path); !result) {
-            load_error_ = std::move(result.error());
-        }
-    }
-
-
 private:
 
-    std::vector<unsigned char> buffer_;
-    std::optional<std::string> load_error_;
+    // Только фабрика load() создаёт объект и только с уже загруженным буфером.
+    explicit Memory(std::vector<unsigned char> buffer)
+        : buffer_(std::move(buffer))
+        , Hash256_(calcHash256(buffer_))
+        , HashMD5_(calcHashMD5(buffer_))
+    {
+    }
 
-    std::string Hash256_ = calcHash256(buffer_);
-    std::string HashMD5_ = calcHashMD5(buffer_);
+    std::vector<unsigned char> buffer_;
+    std::string Hash256_;
+    std::string HashMD5_;
 
 public:
 
-
-    // Загрузка файла в буффер (вектор)
-    std::expected<void, std::string> loadFile(const std::wstring& path);
-
-    // Загружен ли файл (конструктор грузит сразу - здесь результат этой загрузки)
+    // Фабрика: объект существует только если файл успешно загружен.
+    // При ошибке возвращается текст ошибки, объект не создаётся.
     [[nodiscard]]
-    bool isLoaded() const noexcept {
-        return !load_error_.has_value();
-    }
+    static std::expected<Memory, std::string> load(const std::wstring& path);
 
-    // Причина неудачной загрузки (пустая, если isLoaded() == true)
+    // Возвращает span на буфер
     [[nodiscard]]
-    const std::optional<std::string>& loadError() const noexcept {
-        return load_error_;
-    }
-
-    // Возвращает ссылку на буффер
-    [[nodiscard]]
-    const std::vector<unsigned char>& getBuffer() const noexcept {
-        return buffer_;
+    std::span<const unsigned char> getBuffer() const noexcept {
+        return std::span<const unsigned char>(buffer_);
     }
 
     // Поиск паттерна в буффере: возвращает оффсет (позицию) от начала,

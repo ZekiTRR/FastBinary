@@ -6,19 +6,17 @@
 #include <algorithm>
 
 
-// Загрузка файла в буффер (вектор)
-std::expected<void, std::string> Memory::loadFile(const std::wstring& path) {
+// Загрузка файла в буфер (вектор)
+std::expected<Memory, std::string> Memory::load(const std::wstring& path) {
     std::ifstream file(path, std::ios::binary);
     if (!file) {
-        load_error_ = "Failed to open file: " + std::filesystem::path(path).string();
-        return std::unexpected(*load_error_);
+        return std::unexpected("Failed to open file: " + std::filesystem::path(path).string());
     }
 
+    std::vector<unsigned char> buffer;
+    buffer.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
 
-
-    buffer_.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
-    load_error_.reset();
-    return {};
+    return Memory(std::move(buffer));
 }
 
 
