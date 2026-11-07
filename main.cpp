@@ -17,9 +17,10 @@ int main()
 		return 1;
 	}
 
-	std::print("File loaded successfully. Buffer size: {} bytes\n", memory.getBuffer().size());
+	std::print("File's SHA256: {}\n", memory.getHash256());
+	std::print("File's MD5: {}\n", memory.getHashMD5());
 
-	// Конструктор PE сразу делает парс структуры
+	// Конструктор PE сразу делает парс структур
 	PE pe(memory);
 
 	if (!pe.isParsed()) {
@@ -29,13 +30,11 @@ int main()
 
 	if (pe.b_IsPE64()) {
 		std::print("The file is a PE64 (PE32+) executable.\n");
+		std::print("ImageBase: 0x{:X}\n", pe.qw_getBaseAddress());
 	} else {
 		std::print("The file is a PE32 executable.\n");
+		std::print("ImageBase: 0x{:X}\n", pe.qw_getBaseAddress());
 	}
-
-	std::print("NT headers offset: {}, image base: 0x{:X}\n", pe.qw_getNtHeaderAddress(), pe.qw_getBaseAddress());
-
-
 
 	std::cin >> std::ws;
 	return 0;

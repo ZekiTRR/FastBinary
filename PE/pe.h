@@ -4,6 +4,7 @@
 #include <optional>
 #include <expected>
 
+#include "hash.h"
 #include "Memory/memory.h"
 #include "WINAPI/TYPES.h"
 
@@ -13,7 +14,7 @@ public:
 
     // Битность образа по Magic из OptionalHeader: 0x010B - PE32 (32 бита), 0x020B - PE32+ (64 бита)
     enum class Format {
-        Unknown, // Не PE или не удалось спарсить
+        Unknown, // Стандартное значение, битность ещё не определена
         PE32, // x86
         PE32Plus // x64
     };
@@ -21,6 +22,13 @@ public:
     // Конструктор сразу парсит структуру PE из загруженного в Memory буфера.
     // Все проверки - внутри structure_parse.
     explicit PE(const Memory& memory) {
+
+        // TODO if memory.has_error() {"I cannot create object"}
+        /*
+        if (!memory.isLoaded()) {
+            "Declined to create PE object!";
+        } */
+
         if (auto result = structure_parse(memory); !result) {
             parse_error_ = std::move(result.error());
         }
@@ -35,6 +43,7 @@ private:
 
     _IMAGE_DOS_HEADER         dos_header_ {};
     _IMAGE_FILE_HEADER        file_header_ {};
+
     IMAGE_OPTIONAL_HEADER32   optional_header32_ {}; // валиден при format_ == Format::PE32
     _IMAGE_OPTIONAL_HEADER64  optional_header64_ {}; // валиден при format_ == Format::PE32Plus
 
@@ -42,7 +51,6 @@ private:
     QWORD nt_header_offset_ { 0 }; // e_lfanew - оффсет NT-заголовков от начала файла
     QWORD base_address_ { 0 };     // ImageBase из OptionalHeader
     std::optional<std::string> parse_error_;
-
 
 public:
 

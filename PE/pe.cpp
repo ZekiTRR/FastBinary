@@ -21,11 +21,6 @@ static std::expected<T, std::string> read_structure(const std::vector<unsigned c
 
 
 std::expected<void, std::string> PE::structure_parse(const Memory& memory) {
-	// 1. Файл должен быть загружен в буфер
-	if (!memory.isLoaded()) {
-		return std::unexpected("Memory buffer is not loaded: " + memory.loadError().value_or("unknown error"));
-	}
-
 	// Создаётся указатель, по идеи нет копирования
 	const auto& buffer = memory.getBuffer();
 
@@ -40,7 +35,7 @@ std::expected<void, std::string> PE::structure_parse(const Memory& memory) {
 		return std::unexpected(dos_header.error());
 	}
 	dos_header_ = *dos_header;
-	// Т.к dos_header_ - указатель на начало структуры, то теперь ей присваевается начало буфера (который является структурой _IMAGE_DOS_HEADER)
+	// Т.к dos_header_ - указатель на начало структуры, т.е теперь ей присваевается начало буфера (который является структурой _IMAGE_DOS_HEADER)
 	//																			   и теперь можно обращаться к полям структуры через dos_header_.
 
 	if (dos_header_.e_magic != IMAGE_DOS_SIGNATURE) {
@@ -63,7 +58,7 @@ std::expected<void, std::string> PE::structure_parse(const Memory& memory) {
 		return std::unexpected("Invalid NT signature ('PE\\0\\0' expected) at offset " + std::to_string(nt_header_offset_));
 	}
 
-	// 6. FileHeader находится сразу за подписью
+	// 6. FileHeader находится сразу за подписью - 2 поле структуры IMAGE_NT_HEADERS.
 	const auto file_header = read_structure<_IMAGE_FILE_HEADER>(buffer, nt_header_offset_ + sizeof(DWORD));
 	if (!file_header) {
 		return std::unexpected(file_header.error());
@@ -77,7 +72,7 @@ std::expected<void, std::string> PE::structure_parse(const Memory& memory) {
 		return std::unexpected(magic.error());
 	}
 
-	switch (*magic) {
+	switch (*magic)  { // Switch достаёт из std::expected значение, с помощью *
 		// 0x010B - PE32 (32 бита)
 		case 0x010B: {
 			const auto optional_header = read_structure<IMAGE_OPTIONAL_HEADER32>(buffer, optional_header_offset);

@@ -5,6 +5,7 @@
 #include <optional>
 #include <expected>
 
+#include "PE/hash.h"
 #include "WINAPI/TYPES.h"
 
 class Memory {
@@ -25,6 +26,8 @@ private:
     std::vector<unsigned char> buffer_;
     std::optional<std::string> load_error_;
 
+    std::string Hash256_ = calcHash256(buffer_);
+    std::string HashMD5_ = calcHashMD5(buffer_);
 
 public:
 
@@ -54,4 +57,13 @@ public:
     [[nodiscard]]
     std::optional<QWORD> pos_pattern_find(const std::vector<UINT>& pattern) const;
 
+    [[nodiscard]]
+    const std::string& getHash256() const noexcept {
+        return Hash256_;
+    }
+
+    [[nodiscard]]
+    const std::string& getHashMD5() const noexcept {
+        return HashMD5_;
+    }
 };

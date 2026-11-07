@@ -76,3 +76,5 @@ cmake-build-*/
 *.sqlite
 *.db
 /.vs/
+/non_project_files/
+/non_project_asset/

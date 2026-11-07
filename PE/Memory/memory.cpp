@@ -14,6 +14,8 @@ std::expected<void, std::string> Memory::loadFile(const std::wstring& path) {
         return std::unexpected(*load_error_);
     }
 
+
+
     buffer_.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
     load_error_.reset();
     return {};
