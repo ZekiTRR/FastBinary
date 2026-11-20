@@ -3,6 +3,7 @@
 #include "Disasm/disasm.h"
 
 #include <QApplication>
+#include <QCloseEvent>
 #include <QComboBox>
 #include <QDragEnterEvent>
 #include <QDropEvent>
@@ -16,18 +17,33 @@
 #include <QListWidget>
 #include <QMimeData>
 #include <QMessageBox>
+#include <QDir>
+#include <QPlainTextEdit>
+#include <QProcess>
 #include <QProgressBar>
 #include <QPushButton>
+#include <QSettings>
+#include <QShortcut>
 #include <QSlider>
 #include <QStackedWidget>
 #include <QStatusBar>
 #include <QTableWidget>
+#include <QTextCursor>
 #include <QToolButton>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QStyle>
+#include <QStyleFactory>
+#include <QWheelEvent>
+
+#include <algorithm>
 
 namespace {
+
+// В smoke-тестах настройки не читаем и не пишем, чтобы не трогать профиль пользователя.
+bool settingsEnabled() {
+    return !qEnvironmentVariableIsSet("FB_DESKTOP_TEST");
+}
 
 QLineEdit* readOnlyValue(QWidget* parent) {
     auto* value = new QLineEdit(parent);
@@ -87,21 +103,30 @@ QPalette applicationPalette(const bool dark) {
         palette.setColor(QPalette::Dark, QColor("#0e0e11"));
         palette.setColor(QPalette::Light, QColor("#2a2a31"));
     } else {
-        palette.setColor(QPalette::Window, QColor("#f2f2f4"));
-        palette.setColor(QPalette::WindowText, QColor("#232329"));
-        palette.setColor(QPalette::Base, QColor("#fbfbfc"));
-        palette.setColor(QPalette::AlternateBase, QColor("#eaeaee"));
-        palette.setColor(QPalette::ToolTipBase, QColor("#fbfbfc"));
-        palette.setColor(QPalette::ToolTipText, QColor("#232329"));
-        palette.setColor(QPalette::Text, QColor("#232329"));
-        palette.setColor(QPalette::Button, QColor("#fbfbfc"));
-        palette.setColor(QPalette::ButtonText, QColor("#232329"));
-        palette.setColor(QPalette::PlaceholderText, QColor("#63636e"));
-        palette.setColor(QPalette::Highlight, QColor("#5e5498"));
+        // Светлая тема: белый контент на холодном сером фоне, индиго-акцент.
+        // Текст почти чёрный (контраст ~15:1), акцент читается и на белом, и на сером.
+        palette.setColor(QPalette::Window, QColor("#f4f4f6"));
+        palette.setColor(QPalette::WindowText, QColor("#1f2128"));
+        palette.setColor(QPalette::Base, QColor("#ffffff"));
+        palette.setColor(QPalette::AlternateBase, QColor("#ececef"));
+        palette.setColor(QPalette::ToolTipBase, QColor("#ffffff"));
+        palette.setColor(QPalette::ToolTipText, QColor("#1f2128"));
+        palette.setColor(QPalette::Text, QColor("#1f2128"));
+        palette.setColor(QPalette::Button, QColor("#ffffff"));
+        palette.setColor(QPalette::ButtonText, QColor("#1f2128"));
+        palette.setColor(QPalette::BrightText, QColor("#ffffff"));
+        palette.setColor(QPalette::PlaceholderText, QColor("#868892"));
+        palette.setColor(QPalette::Link, QColor("#5150d5"));
+        palette.setColor(QPalette::Highlight, QColor("#5150d5"));
         palette.setColor(QPalette::HighlightedText, QColor("#ffffff"));
-        palette.setColor(QPalette::Mid, QColor("#d8d8de"));
-        palette.setColor(QPalette::Dark, QColor("#63636e"));
+        palette.setColor(QPalette::Mid, QColor("#dcdce1"));
+        palette.setColor(QPalette::Dark, QColor("#c3c4cc"));
         palette.setColor(QPalette::Light, QColor("#ffffff"));
+        // Неактивные виджеты: заметно серее основного текста, без выцветания.
+        palette.setColor(QPalette::Disabled, QPalette::WindowText, QColor("#a7a9b3"));
+        palette.setColor(QPalette::Disabled, QPalette::Text, QColor("#a7a9b3"));
+        palette.setColor(QPalette::Disabled, QPalette::ButtonText, QColor("#a7a9b3"));
+        palette.setColor(QPalette::Disabled, QPalette::Base, QColor("#f1f1f4"));
     }
     return palette;
 }
@@ -110,12 +135,42 @@ QPalette applicationPalette(const bool dark) {
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent) {
+    loadSettings();
     buildUi();
     resize(1120, 760);
     setMinimumSize(820, 600);
+    if (settingsEnabled() && !savedGeometry_.isEmpty()) {
+        restoreGeometry(savedGeometry_);
+    }
+
+    // Размер шрифта меняется комбинациями клавиш и Ctrl+колёсико над любым виджетом окна.
+    qApp->installEventFilter(this);
+    auto* zoomIn = new QShortcut(QKeySequence::ZoomIn, this);
+    auto* zoomOut = new QShortcut(QKeySequence::ZoomOut, this);
+    auto* zoomReset = new QShortcut(QKeySequence("Ctrl+0"), this);
+    // На части раскладок ZoomIn уже равен Ctrl+= — не создаём дубль (Qt посчитал бы его неоднозначным).
+    QShortcut* zoomInEqual = QKeySequence(QKeySequence::ZoomIn) == QKeySequence("Ctrl+=")
+        ? nullptr : new QShortcut(QKeySequence("Ctrl+="), this);
+    for (QShortcut* shortcut : { zoomIn, zoomOut, zoomReset, zoomInEqual }) {
+        if (shortcut) {
+            shortcut->setContext(Qt::WindowShortcut);
+        }
+    }
+    connect(zoomIn, &QShortcut::activated, this, [this] { changeFontSize(1); });
+    if (zoomInEqual) {
+        connect(zoomInEqual, &QShortcut::activated, this, [this] { changeFontSize(1); });
+    }
+    connect(zoomOut, &QShortcut::activated, this, [this] { changeFontSize(-1); });
+    connect(zoomReset, &QShortcut::activated, this, [this] {
+        fontDelta_ = 0;
+        applyFonts();
+    });
+    applyFonts();
 }
 
-MainWindow::~MainWindow() = default;
+MainWindow::~MainWindow() {
+    qApp->removeEventFilter(this);
+}
 
 QString MainWindow::text(const char* english, const char* russian) const {
     return language_ == "ru" ? QString::fromUtf8(russian) : QString::fromUtf8(english);
@@ -149,6 +204,7 @@ QString MainWindow::formatSize(const qulonglong bytes) const {
 }
 
 void MainWindow::buildUi() {
+    defaultStyle_ = qApp->style()->objectName();
     setWindowTitle("FastBinary");
     auto* central = new QWidget(this);
     auto* rootLayout = new QVBoxLayout(central);
@@ -173,7 +229,7 @@ void MainWindow::buildUi() {
     auto* sideLayout = new QVBoxLayout(sidebar);
     sideLayout->setContentsMargins(8, 8, 8, 8);
     sideLayout->setSpacing(3);
-    for (int i = 0; i < 9; ++i) {
+    for (int i = 0; i < 10; ++i) {
         if (i == 7) {
             sideLayout->addStretch();
         }
@@ -192,16 +248,36 @@ void MainWindow::buildUi() {
     body->addWidget(sidebar);
 
     stack_ = new QStackedWidget(central);
-    for (int i = 0; i < 9; ++i) {
+    for (int i = 0; i < 10; ++i) {
         stack_->addWidget(createPage(i));
     }
     body->addWidget(stack_, 1);
     rootLayout->addLayout(body, 1);
 
+    // Восстанавливаем сохранённые настройки до подключения сигналов — без лишних re-apply.
+    if (const int themeIndex = themeCombo_->findData(theme_); themeIndex >= 0) {
+        themeCombo_->setCurrentIndex(themeIndex);
+    }
+    if (const int languageIndex = languageCombo_->findData(language_); languageIndex >= 0) {
+        languageCombo_->setCurrentIndex(languageIndex);
+    }
+    if (const int unitsIndex = unitsCombo_->findData(units_); unitsIndex >= 0) {
+        unitsCombo_->setCurrentIndex(unitsIndex);
+    }
+    if (const int packerIndex = packerCombo_->findData(packer_); packerIndex >= 0) {
+        packerCombo_->setCurrentIndex(packerIndex);
+    }
+    disasmSpacing_->setValue(disasmSpacingSaved_);
+
     statusLabel_ = new QLabel(central);
     statusBar()->addWidget(statusLabel_, 1);
 
     connect(openButton_, &QPushButton::clicked, this, &MainWindow::openFileDialog);
+    connect(stack_, &QStackedWidget::currentChanged, this, [this](const int index) {
+        if (pageDirty_[index]) {
+            updatePage(index);
+        }
+    });
     connect(themeCombo_, &QComboBox::currentIndexChanged, this, &MainWindow::applyTheme);
     connect(languageCombo_, &QComboBox::currentIndexChanged, this, [this] {
         language_ = languageCombo_->currentData().toString();
@@ -213,6 +289,8 @@ void MainWindow::buildUi() {
     });
     connect(stringsFilter_, &QLineEdit::textChanged, this, &MainWindow::filterStrings);
     connect(importsList_, &QListWidget::currentRowChanged, this, &MainWindow::updateImportFunctions);
+    connect(packerCombo_, &QComboBox::currentIndexChanged, this, [this] { updatePackers(); });
+    connect(packButton_, &QPushButton::clicked, this, &MainWindow::startPack);
     connect(disasmSpacing_, &QSlider::valueChanged, this, [this](int value) {
         disasmSpacingValue_->setText(QString::number(value) + "px");
         if (disasmTable_) {
@@ -243,8 +321,9 @@ QWidget* MainWindow::createPage(const int index) {
             form->setLabelAlignment(Qt::AlignLeft);
             form->setHorizontalSpacing(24);
             form->setVerticalSpacing(8);
-            for (int i = 0; i < 10; ++i) {
+            for (int i = 0; i < 9; ++i) {
                 quickLabels_[i] = new QLabel(page);
+                quickLabels_[i]->setProperty("formLabel", true);
                 quickValues_[i] = readOnlyValue(page);
                 quickValues_[i]->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
                 form->addRow(quickLabels_[i], quickValues_[i]);
@@ -330,6 +409,7 @@ QWidget* MainWindow::createPage(const int index) {
             auto* form = new QFormLayout;
             for (int i = 0; i < 6; ++i) {
                 tlsLabels_[i] = new QLabel(tlsContent_);
+                tlsLabels_[i]->setProperty("formLabel", true);
                 tlsValues_[i] = readOnlyValue(tlsContent_);
                 tlsValues_[i]->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
                 form->addRow(tlsLabels_[i], tlsValues_[i]);
@@ -354,6 +434,42 @@ QWidget* MainWindow::createPage(const int index) {
             break;
         }
         case 8: {
+            // Packers: упаковка открытого файла выбранным инструментом.
+            // Xenolith вызывается напрямую через сабкоманду pack — его TUI не запускается.
+            packersForm_ = new QFormLayout;
+            packersForm_->setLabelAlignment(Qt::AlignLeft);
+            packersForm_->setHorizontalSpacing(24);
+            packersForm_->setVerticalSpacing(8);
+            for (int i = 0; i < 4; ++i) {
+                packerLabels_[i] = new QLabel(page);
+                packerLabels_[i]->setProperty("formLabel", true);
+            }
+            packerCombo_ = new QComboBox(page);
+            packerCombo_->addItem("Xenolith", "xenolith");
+            packerCombo_->addItem("UPX", "upx");
+            xenolithProfileCombo_ = new QComboBox(page);
+            xenolithProfileCombo_->addItem(QString(), "fast");
+            xenolithProfileCombo_->addItem(QString(), "standard");
+            xenolithProfileCombo_->addItem(QString(), "max");
+            xenolithExportsEdit_ = new QLineEdit(page);
+            packerOutputEdit_ = readOnlyValue(page);
+            packersForm_->addRow(packerLabels_[0], packerCombo_);
+            packersForm_->addRow(packerLabels_[1], xenolithProfileCombo_);
+            packersForm_->addRow(packerLabels_[2], xenolithExportsEdit_);
+            packersForm_->addRow(packerLabels_[3], packerOutputEdit_);
+            layout->addLayout(packersForm_);
+            packButton_ = new QPushButton(page);
+            layout->addWidget(packButton_);
+            packerNoteLabel_ = new QLabel(page);
+            packerNoteLabel_->setWordWrap(true);
+            layout->addWidget(packerNoteLabel_);
+            packerLog_ = new QPlainTextEdit(page);
+            packerLog_->setReadOnly(true);
+            packerLog_->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
+            layout->addWidget(packerLog_, 1);
+            break;
+        }
+        case 9: {
             auto* form = new QFormLayout;
             themeLabel_ = new QLabel(page);
             languageLabel_ = new QLabel(page);
@@ -396,44 +512,71 @@ bool MainWindow::loadFile(const QString& path) {
     memory_ = std::make_unique<Memory>(std::move(*memoryResult));
     pe_ = std::make_unique<PE>(std::move(*peResult));
     filePath_ = path;
-    strings_ = PE::extractStrings(memory_->getBuffer());
-    const auto buffer = memory_->getBuffer();
-    hexEditor_->setBytes(std::vector<unsigned char>(buffer.begin(), buffer.end()));
+    strings_.clear();
+    stringsExtracted_ = false;
 
     const QFileInfo info(path);
     fileLabel_->setText(info.absoluteFilePath());
     setWindowTitle("FastBinary — " + info.fileName());
-    updateAll();
+
+    // Тяжёлые вкладки (строки, дизасм, HEX-копия) заполняются лениво — при первом открытии.
+    markPagesDirty();
     stack_->setCurrentIndex(0);
     navButtons_[0]->setChecked(true);
+    updateCurrentPage();
+    updateStatus();
     return true;
 }
 
-void MainWindow::updateAll() {
-    if (!memory_ || !pe_) {
+void MainWindow::markPagesDirty() {
+    for (bool& dirty : pageDirty_) {
+        dirty = true;
+    }
+}
+
+void MainWindow::updateCurrentPage() {
+    updatePage(stack_->currentIndex());
+}
+
+void MainWindow::updatePage(const int index) {
+    if (index < 0 || index > 9) {
         return;
     }
-    updateQuickInfo();
-    updateSections();
-    updateStrings();
-    updateDisasm();
-    updateImports();
-    updateTls();
-    updateResources();
-    updateStatus();
+    pageDirty_[index] = false;
+    switch (index) {
+        case 0: updateQuickInfo(); break;
+        case 1: updateSections(); break;
+        case 2: updateStrings(); break;
+        case 3: updateDisasm(); break;
+        case 4: updateImports(); break;
+        case 5: updateTls(); break;
+        case 6: updateResources(); break;
+        case 7:
+            // HEX-редактор получает свою копию байтов один раз на файл,
+            // иначе повторный заход на вкладку стёр бы пользовательские правки.
+            if (memory_) {
+                const auto buffer = memory_->getBuffer();
+                hexEditor_->setBytes(std::vector<unsigned char>(buffer.begin(), buffer.end()));
+            }
+            break;
+        case 8: updatePackers(); break;
+        case 9: break; // Настройки заполнять нечем.
+    }
 }
 
 void MainWindow::updateQuickInfo() {
+    if (!pe_ || !memory_) {
+        return;
+    }
     quickValues_[0]->setText(pe_->b_IsPE64() ? "PE32+ (64-bit)" : "PE32 (32-bit)");
     quickValues_[1]->setText(QString::fromUtf8(pe_->getArchitectureName().data(), static_cast<int>(pe_->getArchitectureName().size())));
     quickValues_[2]->setText(QString::fromStdString(pe_->getBuildDateTime()));
-    quickValues_[3]->setText(text("Not checked", "Не проверялся"));
-    quickValues_[4]->setText(QString::fromStdString(memory_->getHashMD5()));
-    quickValues_[5]->setText(QString::fromStdString(memory_->getHash256()));
-    quickValues_[6]->setText(formatHex(pe_->qw_getBaseAddress()));
-    quickValues_[7]->setText(formatHex(pe_->getEntryPointRva()) + " (RVA)");
-    quickValues_[8]->setText(subsystemName());
-    quickValues_[9]->setText(formatSize(memory_->getBuffer().size()));
+    quickValues_[3]->setText(QString::fromStdString(memory_->getHashMD5()));
+    quickValues_[4]->setText(QString::fromStdString(memory_->getHash256()));
+    quickValues_[5]->setText(formatHex(pe_->qw_getBaseAddress()));
+    quickValues_[6]->setText(formatHex(pe_->getEntryPointRva()) + " (RVA)");
+    quickValues_[7]->setText(subsystemName());
+    quickValues_[8]->setText(formatSize(memory_->getBuffer().size()));
     for (QLineEdit* value : quickValues_) {
         value->setCursorPosition(0);
     }
@@ -455,6 +598,9 @@ QString MainWindow::subsystemName() const {
 }
 
 void MainWindow::updateSections() {
+    if (!pe_ || !memory_) {
+        return;
+    }
     const double entropy = PE::calculateEntropy(memory_->getBuffer());
     totalEntropyValue_->setText(QString::number(entropy, 'f', 2) + " / 8");
     totalEntropyBar_->setValue(static_cast<int>(entropy * 100));
@@ -480,6 +626,14 @@ void MainWindow::updateSections() {
 }
 
 void MainWindow::updateStrings() {
+    if (!memory_) {
+        return;
+    }
+    // Строки извлекаются один раз при первом открытии вкладки: для больших файлов это долго.
+    if (!stringsExtracted_) {
+        strings_ = PE::extractStrings(memory_->getBuffer());
+        stringsExtracted_ = true;
+    }
     stringsTable_->setRowCount(static_cast<int>(strings_.size()));
     for (int row = 0; row < static_cast<int>(strings_.size()); ++row) {
         const PE::StringEntry& entry = strings_[row];
@@ -504,6 +658,9 @@ void MainWindow::filterStrings() {
 }
 
 void MainWindow::updateDisasm() {
+    if (!pe_ || !memory_) {
+        return;
+    }
     disasmTable_->setRowCount(0);
     disasmStatus_->hide();
     disasmEntryLabel_->setText(text("Entry point", "Точка входа") + " · " + formatHex(pe_->getEntryPointRva()) + " (RVA)");
@@ -544,6 +701,9 @@ void MainWindow::updateDisasm() {
 }
 
 void MainWindow::updateImports() {
+    if (!pe_) {
+        return;
+    }
     importsList_->clear();
     for (const PE::ImportLibrary& library : pe_->getImports()) {
         importsList_->addItem(QString::fromStdString(library.name));
@@ -556,6 +716,9 @@ void MainWindow::updateImports() {
 }
 
 void MainWindow::updateImportFunctions(const int row) {
+    if (!pe_) {
+        return;
+    }
     importsTable_->setRowCount(0);
     if (row < 0 || row >= static_cast<int>(pe_->getImports().size())) {
         importsCount_->setText(text("No imports", "Импорт отсутствует"));
@@ -574,6 +737,9 @@ void MainWindow::updateImportFunctions(const int row) {
 }
 
 void MainWindow::updateTls() {
+    if (!pe_) {
+        return;
+    }
     const PE::TlsInfo& tls = pe_->getTls();
     tlsEmpty_->setVisible(!tls.present);
     tlsContent_->setVisible(tls.present);
@@ -599,6 +765,9 @@ void MainWindow::updateTls() {
 }
 
 void MainWindow::updateResources() {
+    if (!pe_) {
+        return;
+    }
     const auto& resources = pe_->getResources();
     resourcesTable_->setRowCount(static_cast<int>(resources.size()));
     for (int row = 0; row < static_cast<int>(resources.size()); ++row) {
@@ -626,30 +795,59 @@ void MainWindow::applyUnits() {
         updateQuickInfo();
         updateResources();
         updateStatus();
+        pageDirty_[0] = false;
+        pageDirty_[6] = false;
     }
 }
 
 void MainWindow::applyTheme() {
     const QString theme = themeCombo_->currentData().toString();
     if (theme == "dark") {
-        qApp->setPalette(applicationPalette(true));
+        // Нативные стили Windows (windows11/vista) игнорируют части кастомной палитры
+        // (текст кнопок и комбобоксов выходит белым на белом), поэтому для тем с
+        // собственной палитрой нужен Fusion.
+        qApp->setStyle(QStyleFactory::create("Fusion"));
     } else if (theme == "light") {
-        qApp->setPalette(applicationPalette(false));
+        qApp->setStyle(QStyleFactory::create("Fusion"));
     } else {
-        qApp->setPalette(qApp->style()->standardPalette());
+        qApp->setStyle(QStyleFactory::create(defaultStyle_));
     }
-    qApp->setStyleSheet(R"(
+    // Полупрозрачные цвета строим из целевой палитры: одна таблица стилей на все три темы.
+    const QPalette targetPalette = theme == "dark" ? applicationPalette(true)
+        : theme == "light" ? applicationPalette(false)
+        : qApp->style()->standardPalette();
+    const QColor ink = targetPalette.color(QPalette::WindowText);
+    const QColor accent = targetPalette.color(QPalette::Highlight);
+    const auto rgba = [](const QColor& color, const double alpha) {
+        return QString("rgba(%1, %2, %3, %4)").arg(color.red()).arg(color.green()).arg(color.blue()).arg(alpha, 0, 'f', 2);
+    };
+    // ВАЖЕН ПОРЯДОК: setStyleSheet перезаписывает палитру, заданную ранее setPalette,
+    // (текст кнопок выцветает до серого), поэтому палитру применяем ПОСЛЕ таблицы стилей.
+    // palette(text) в правиле обязательно: со стилевыми таблицами Qt красит текст
+    // readOnly QLineEdit цветом плейсхолдера — в светлой теме он выцветает.
+    // Цвета кнопок заданы явно: QStyleSheetStyle иначе рисует их текст мимо палитры.
+    qApp->setStyleSheet(QString(R"(
+        QPushButton {
+            background: %4;
+            color: %5;
+            border: 1px solid %6;
+            border-radius: 4px;
+            padding: 4px 14px;
+        }
+        QPushButton:hover { border-color: %7; }
+        QPushButton:pressed { background: %8; }
+        QPushButton:disabled { color: %9; }
         QToolButton[nav="true"] {
             text-align: left;
             padding: 7px 9px;
             border: 0;
             border-radius: 5px;
             font-family: "Cascadia Mono", Consolas, monospace;
-            font-size: 12px;
+            font-size: %10px;
         }
-        QToolButton[nav="true"]:hover { background: palette(alternate-base); }
+        QToolButton[nav="true"]:hover { background: %1; }
         QToolButton[nav="true"]:checked {
-            background: palette(alternate-base);
+            background: %2;
             color: palette(highlight);
             border-left: 2px solid palette(highlight);
             font-weight: 600;
@@ -658,23 +856,40 @@ void MainWindow::applyTheme() {
             font-family: "Cascadia Mono", Consolas, monospace;
             font-weight: 600;
         }
-        QLineEdit[readOnly="true"] { background: transparent; border: 0; }
-    )");
+        QLineEdit[readOnly="true"] { background: transparent; border: 0; color: palette(text); }
+        QLabel[formLabel="true"] { color: %3; }
+    )").arg(rgba(ink, 0.07), rgba(accent, 0.13), rgba(ink, 0.72),
+        targetPalette.color(QPalette::Button).name(),
+        targetPalette.color(QPalette::ButtonText).name(),
+        targetPalette.color(QPalette::Mid).name(),
+        accent.name(),
+        rgba(ink, 0.07),
+        rgba(ink, 0.4))
+        .arg(12 + fontDelta_));
+    qApp->setPalette(targetPalette);
+    // Смена стиля+палитры+QSS на живом приложении применяется частично: часть виджетов
+    // продолжает рисоваться данными прошлой темы (кнопка Open… выходила бледной).
+    // Каноничный фикс — принудительный re-polish всех виджетов.
+    for (QWidget* widget : QApplication::allWidgets()) {
+        widget->style()->unpolish(widget);
+        widget->style()->polish(widget);
+        widget->update();
+    }
 }
 
 void MainWindow::retranslateUi() {
-    const char* englishNames[] { "Quick Info", "Sections", "Strings", "Disasm", "Imports", "TLS", "Resources", "HEX", "Settings" };
-    const char* russianNames[] { "Сводка", "Секции", "Строки", "Дизассемблер", "Импорт", "TLS", "Ресурсы", "HEX", "Настройки" };
-    for (int i = 0; i < 9; ++i) {
+    const char* englishNames[] { "Quick Info", "Sections", "Strings", "Disasm", "Imports", "TLS", "Resources", "HEX", "Packers", "Settings" };
+    const char* russianNames[] { "Сводка", "Секции", "Строки", "Дизассемблер", "Импорт", "TLS", "Ресурсы", "HEX", "Упаковщики", "Настройки" };
+    for (int i = 0; i < 10; ++i) {
         const QString name = language_ == "ru" ? QString::fromUtf8(russianNames[i]) : QString::fromUtf8(englishNames[i]);
         navButtons_[i]->setText(name);
         pageTitles_[i]->setText(name);
     }
     openButton_->setText(text("Open…", "Открыть…"));
 
-    const char* quickEnglish[] { "Bitness", "Architecture", "Build date", "VirusTotal", "MD5", "SHA256", "ImageBase", "Entry point", "Subsystem", "File size" };
-    const char* quickRussian[] { "Битность", "Архитектура", "Дата сборки", "VirusTotal", "MD5", "SHA256", "ImageBase", "Точка входа", "Подсистема", "Размер файла" };
-    for (int i = 0; i < 10; ++i) {
+    const char* quickEnglish[] { "Bitness", "Architecture", "Build date", "MD5", "SHA256", "ImageBase", "Entry point", "Subsystem", "File size" };
+    const char* quickRussian[] { "Битность", "Архитектура", "Дата сборки", "MD5", "SHA256", "ImageBase", "Точка входа", "Подсистема", "Размер файла" };
+    for (int i = 0; i < 9; ++i) {
         quickLabels_[i]->setText(language_ == "ru" ? QString::fromUtf8(quickRussian[i]) : QString::fromUtf8(quickEnglish[i]));
     }
     totalEntropyLabel_->setText(text("Total entropy", "Общая энтропия"));
@@ -700,20 +915,70 @@ void MainWindow::retranslateUi() {
     themeCombo_->setItemText(2, text("Light", "Светлая"));
     unitsCombo_->setItemText(0, text("Auto", "Авто"));
     unitsCombo_->setItemText(1, text("Bytes", "Байты"));
+    packerLabels_[0]->setText(text("Packer", "Упаковщик"));
+    packerLabels_[1]->setText(text("Xenolith profile", "Профиль Xenolith"));
+    packerLabels_[2]->setText(text("Virtualized exports", "Виртуализируемые экспорты"));
+    packerLabels_[3]->setText(text("Output", "Результат"));
+    xenolithProfileCombo_->setItemText(0, text("Fast", "Быстрый"));
+    xenolithProfileCombo_->setItemText(1, text("Standard", "Стандартный"));
+    xenolithProfileCombo_->setItemText(2, text("Max", "Максимальный"));
+    xenolithExportsEdit_->setPlaceholderText(text("Export names, comma-separated", "Имена экспортов через запятую"));
+    packButton_->setText(text("Pack", "Упаковать"));
+    // Заметка и состояние кнопки пересобираются под текущий файл и выбранный упаковщик.
+    updatePackers();
     hexEditor_->retranslate(language_ == "ru");
     if (pe_) {
-        updateQuickInfo();
-        updateDisasm();
-        updateImportFunctions(importsList_->currentRow());
-        updateTls();
+        // Переводим содержимое только уже заполненных вкладок — ленивые соберутся при первом открытии.
+        if (!pageDirty_[0]) updateQuickInfo();
+        if (!pageDirty_[3]) updateDisasm();
+        if (!pageDirty_[4]) updateImportFunctions(importsList_->currentRow());
+        if (!pageDirty_[5]) updateTls();
     }
     updateStatus();
 }
 
+void MainWindow::loadSettings() {
+    if (!settingsEnabled()) {
+        return;
+    }
+    const QSettings settings;
+    theme_ = settings.value("theme", theme_).toString();
+    language_ = settings.value("language", language_).toString();
+    units_ = settings.value("units", units_).toString();
+    packer_ = settings.value("packer", packer_).toString();
+    disasmSpacingSaved_ = settings.value("disasmSpacing", disasmSpacingSaved_).toInt();
+    fontDelta_ = std::clamp(settings.value("fontDelta", 0).toInt(), -3, 10);
+    lastDir_ = settings.value("lastDir").toString();
+    savedGeometry_ = settings.value("geometry").toByteArray();
+}
+
+void MainWindow::saveSettings() {
+    if (!settingsEnabled()) {
+        return;
+    }
+    QSettings settings;
+    settings.setValue("theme", themeCombo_->currentData().toString());
+    settings.setValue("language", languageCombo_->currentData().toString());
+    settings.setValue("units", unitsCombo_->currentData().toString());
+    settings.setValue("packer", packerCombo_->currentData().toString());
+    settings.setValue("disasmSpacing", disasmSpacing_->value());
+    settings.setValue("fontDelta", fontDelta_);
+    if (!filePath_.isEmpty()) {
+        settings.setValue("lastDir", QFileInfo(filePath_).absolutePath());
+    }
+    settings.setValue("geometry", saveGeometry());
+}
+
+void MainWindow::closeEvent(QCloseEvent* event) {
+    saveSettings();
+    QMainWindow::closeEvent(event);
+}
+
 void MainWindow::openFileDialog() {
+    const QString startDir = filePath_.isEmpty() ? lastDir_ : filePath_;
     const QString path = QFileDialog::getOpenFileName(this,
         text("Open PE file", "Открыть PE-файл"),
-        filePath_,
+        startDir,
         "PE files (*.exe *.dll *.sys *.ocx *.cpl);;All files (*)");
     if (!path.isEmpty()) {
         loadFile(path);
@@ -730,5 +995,243 @@ void MainWindow::dropEvent(QDropEvent* event) {
     const QList<QUrl> urls = event->mimeData()->urls();
     if (!urls.isEmpty()) {
         loadFile(urls.first().toLocalFile());
+    }
+}
+
+// --- Packers ---
+
+void MainWindow::updatePackers() {
+    if (!packerCombo_) {
+        return;
+    }
+    const QString key = packerCombo_->currentData().toString();
+    // У Xenolith есть дополнительные опции; UPX вызывается только с -o и входным файлом.
+    packersForm_->setRowVisible(1, key == "xenolith");
+    packersForm_->setRowVisible(2, key == "xenolith");
+
+    if (!memory_) {
+        packerOutputEdit_->clear();
+        packerNoteLabel_->setText(text("Open a PE file first.", "Сначала откройте PE-файл."));
+        packButton_->setEnabled(false);
+        return;
+    }
+    // Упакованный файл всегда ложится рядом с оригиналом.
+    packerOutputEdit_->setText(QDir::toNativeSeparators(defaultPackedPath(key)));
+    if (packerExecutable(key).isEmpty()) {
+        packerNoteLabel_->setText(text("Packer executable not found in the Packers folder.", "Исполняемый файл упаковщика не найден в папке Packers."));
+        packButton_->setEnabled(false);
+        return;
+    }
+    if (key == "xenolith" && !pe_->b_IsPE64()) {
+        packerNoteLabel_->setText(text("Xenolith supports only 64-bit (x64) PE files.", "Xenolith поддерживает только 64-битные (x64) PE-файлы."));
+        packButton_->setEnabled(false);
+        return;
+    }
+    updatePackerNote();
+    packButton_->setEnabled(!packRunning_);
+}
+
+void MainWindow::updatePackerNote() {
+    const QString key = packerCombo_->currentData().toString();
+    if (key == "upx") {
+        packerNoteLabel_->setText(text("Classic compression: upx.exe -o <output> <input>. The result can be unpacked with 'upx -d'.", "Классическое сжатие: upx.exe -o <результат> <исходник>. Результат можно распаковать командой 'upx -d'."));
+    } else {
+        packerNoteLabel_->setText(text("Seals pages with ChaCha20-Poly1305 and compiles the selected exports into per-build unique native code. FastBinary calls its 'pack' command directly on the open file — no console wizard.", "Запечатывает страницы ChaCha20-Poly1305 и компилирует выбранные экспорты в уникальный для каждой сборки машинный код. FastBinary вызывает его команду 'pack' прямо над открытым файлом — консольный мастер не запускается."));
+    }
+}
+
+void MainWindow::startPack() {
+    if (!memory_ || !pe_ || packRunning_) {
+        return;
+    }
+    const QString key = packerCombo_->currentData().toString();
+    const QString executable = packerExecutable(key);
+    if (executable.isEmpty()) {
+        QMessageBox::warning(this, text("Packer not found", "Упаковщик не найден"),
+            text("Packer executable not found in the Packers folder.", "Исполняемый файл упаковщика не найден в папке Packers."));
+        return;
+    }
+    if (key == "xenolith" && !pe_->b_IsPE64()) {
+        QMessageBox::warning(this, text("Unsupported file", "Файл не поддерживается"),
+            text("Xenolith supports only 64-bit (x64) PE files.", "Xenolith поддерживает только 64-битные (x64) PE-файлы."));
+        return;
+    }
+
+    const QString input = QFileInfo(filePath_).absoluteFilePath();
+    packOutputPath_ = QFileInfo(defaultPackedPath(key)).absoluteFilePath();
+
+    QStringList arguments;
+    if (key == "xenolith") {
+        // Xenolith умеет неинтерактивную сабкоманду pack: TUI с файловым менеджером не нужен.
+        arguments << "pack" << input << "-o" << packOutputPath_
+                  << "--profile" << xenolithProfileCombo_->currentData().toString();
+        // --vm-export принимает имена через запятую; убираем пробелы вокруг них.
+        QStringList exports;
+        for (QString part : xenolithExportsEdit_->text().split(',', Qt::SkipEmptyParts)) {
+            part = part.trimmed();
+            if (!part.isEmpty()) {
+                exports << part;
+            }
+        }
+        if (!exports.isEmpty()) {
+            arguments << "--vm-export" << exports.join(',');
+        }
+    } else {
+        // UPX 5.3.0 не понимает --ultra; держим минимальный проверенный вызов:
+        // upx.exe -o <выходной файл> <входной файл>. Уровни сжатия не передаём.
+        arguments << "-o" << packOutputPath_ << input;
+    }
+
+    if (!packProcess_) {
+        packProcess_ = new QProcess(this);
+        packProcess_->setProcessChannelMode(QProcess::MergedChannels);
+        // Пакеры — консольные утилиты: без CREATE_NO_WINDOW Windows покажет консольное окно.
+        packProcess_->setCreateProcessArgumentsModifier([](QProcess::CreateProcessArguments* create) {
+            create->flags |= CREATE_NO_WINDOW;
+        });
+        connect(packProcess_, &QProcess::readyReadStandardOutput, this, [this] {
+            appendPackChunk(QString::fromUtf8(packProcess_->readAll()));
+        });
+        connect(packProcess_, &QProcess::finished, this, [this](const int exitCode, const QProcess::ExitStatus status) {
+            finishPack(exitCode, status != QProcess::NormalExit);
+        });
+        connect(packProcess_, &QProcess::errorOccurred, this, [this](const QProcess::ProcessError error) {
+            if (error == QProcess::FailedToStart) {
+                appendPackChunk(text("Failed to start the packer.\n", "Не удалось запустить упаковщик.\n"));
+                finishPack(-1, true);
+            }
+        });
+    }
+
+    packerLog_->clear();
+    appendPackChunk("> " + QFileInfo(executable).fileName() + " " + arguments.join(" ") + "\n\n");
+    packRunning_ = true;
+    packButton_->setEnabled(false);
+    packProcess_->setWorkingDirectory(QFileInfo(executable).absolutePath());
+    packProcess_->start(executable, arguments);
+}
+
+void MainWindow::appendPackChunk(const QString& chunk) {
+    // Консольные утилиты рисуют прогресс через \r и \b — приводим к обычным строкам.
+    QString normalized = chunk;
+    normalized.replace("\r\n", "\n");
+    normalized.replace('\r', '\n');
+    normalized.remove('\b');
+    packerLog_->moveCursor(QTextCursor::End);
+    packerLog_->insertPlainText(normalized);
+    packerLog_->moveCursor(QTextCursor::End);
+}
+
+void MainWindow::finishPack(const int exitCode, const bool crashed) {
+    packRunning_ = false;
+    packButton_->setEnabled(memory_ != nullptr && !packerExecutable(packerCombo_->currentData().toString()).isEmpty());
+    if (crashed || exitCode != 0) {
+        appendPackChunk("\n" + text("Packing failed.", "Ошибка упаковки.") + "\n");
+        QMessageBox::warning(this, text("Packing failed", "Ошибка упаковки"),
+            crashed ? text("The packer terminated abnormally.", "Упаковщик завершился аварийно.")
+                    : text("The packer returned exit code %1.", "Упаковщик завершился с кодом %1.").arg(exitCode));
+        return;
+    }
+    appendPackChunk("\n" + text("Packed successfully.", "Упаковано успешно.") + "\n");
+    const QString native = QDir::toNativeSeparators(packOutputPath_);
+    const auto answer = QMessageBox::question(this,
+        text("Packing complete", "Упаковка завершена"),
+        text("The packed file is saved next to the original:", "Упакованный файл сохранён рядом с оригиналом:") + "\n" + native + "\n\n"
+            + text("Load it for analysis?", "Открыть его для анализа?"),
+        QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+    if (answer == QMessageBox::Yes) {
+        loadFile(packOutputPath_);
+    }
+}
+
+QString MainWindow::packerExecutable(const QString& key) const {
+    const QString name = key == "upx" ? "upx.exe" : "xenolith.exe";
+    QStringList candidates;
+    // Переопределение каталога пакеров — для тестов и портабельных сборок.
+    const QString overrideDir = qEnvironmentVariable("FB_PACKERS_DIR");
+    if (!overrideDir.isEmpty()) {
+        candidates << overrideDir + "/" + name;
+    }
+    // Рядом с exe, а затем вверх по дереву каталогов (cmake-build-debug, out/, ...).
+    const QString appDir = QCoreApplication::applicationDirPath();
+    candidates << appDir + "/Packers/" + name
+               << appDir + "/../Packers/" + name
+               << appDir + "/../../Packers/" + name
+               << appDir + "/../../../Packers/" + name
+               << appDir + "/../../../../Packers/" + name;
+    for (const QString& candidate : candidates) {
+        if (QFileInfo::exists(candidate)) {
+            return QFileInfo(candidate).absoluteFilePath();
+        }
+    }
+    return QString();
+}
+
+QString MainWindow::defaultPackedPath(const QString& key) const {
+    const QFileInfo info(filePath_);
+    const QString extension = info.suffix().isEmpty() ? QString() : "." + info.suffix();
+    const QString marker = key == "xenolith" ? ".xl" : key == "upx" ? "_upx" : "_packed";
+    return info.absolutePath() + "/" + info.completeBaseName() + marker + extension;
+}
+
+// --- Размер шрифта ---
+
+bool MainWindow::eventFilter(QObject* watched, QEvent* event) {
+    if (event->type() == QEvent::Wheel) {
+        auto* wheel = static_cast<QWheelEvent*>(event);
+        if (wheel->modifiers() & Qt::ControlModifier) {
+            auto* widget = qobject_cast<QWidget*>(watched);
+            if (widget && (widget == this || isAncestorOf(widget))) {
+                changeFontSize(wheel->angleDelta().y() > 0 ? 1 : -1);
+                return true; // не прокручиваем таблицу/лог одновременно с изменением шрифта
+            }
+        }
+    }
+    return QMainWindow::eventFilter(watched, event);
+}
+
+void MainWindow::changeFontSize(const int delta) {
+    const int next = std::clamp(fontDelta_ + delta, -3, 10);
+    if (next == fontDelta_) {
+        return;
+    }
+    fontDelta_ = next;
+    applyFonts();
+}
+
+void MainWindow::applyFonts() {
+    // Шрифт меняется, а не масштаб: layout и размеры виджетов остаются прежними,
+    // увеличивается только pointSize/pixelSize у уже установленных шрифтов.
+    const auto scaled = [](const QFont& base, const int delta) {
+        QFont font = base;
+        if (font.pointSize() > 0) {
+            font.setPointSize(std::max(6, font.pointSize() + delta));
+        } else if (font.pixelSize() > 0) {
+            font.setPixelSize(std::max(8, font.pixelSize() + delta * 2));
+        }
+        return font;
+    };
+
+    if (!baseFontsCaptured_) {
+        baseAppFont_ = qApp->font();
+        // Фиксируем исходные шрифты один раз, чтобы повторные Ctrl++ не складывались.
+        for (QWidget* widget : findChildren<QWidget*>()) {
+            widget->setProperty("fbBaseFont", QVariant::fromValue(widget->font()));
+        }
+        baseFontsCaptured_ = true;
+    }
+
+    qApp->setFont(scaled(baseAppFont_, fontDelta_));
+    // У навигационных кнопок размер задан в QSS — сначала пересобираем таблицу стилей,
+    // иначе re-polish сбросил бы только что установленные шрифты виджетов.
+    applyTheme();
+    for (QWidget* widget : findChildren<QWidget*>()) {
+        const QVariant base = widget->property("fbBaseFont");
+        if (base.isValid()) {
+            widget->setFont(scaled(base.value<QFont>(), fontDelta_));
+        }
+    }
+    if (hexEditor_) {
+        hexEditor_->setRowHeightForFont(fontDelta_);
     }
 }

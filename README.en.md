@@ -12,6 +12,7 @@ Fast PE analyzer and HEX editor built with C++26, Qt 6 and Capstone.
 - **Disassembly:** x86/x64 via Capstone with adjustable column spacing.
 - **Imports, TLS and resources:** libraries and functions, TLS fields and callbacks, resource types and sizes.
 - **HEX:** synchronized byte and ASCII panes, editing, offset navigation and Save As.
+- **Packers:** pack the currently open file straight from the app — [Xenolith](https://github.com/HHT0rro/Xenolith) (invoked non-interactively, no console wizard) and [UPX](https://github.com/upx/upx). The result is saved next to the original.
 - **Settings:** theme, UI language (EN/RU) and size units.
 
 ![PE quick info](docs/images/quick-info.png)
@@ -30,6 +31,8 @@ Fast PE analyzer and HEX editor built with C++26, Qt 6 and Capstone.
 FastBinary.exe path\to\file.exe
 ```
 
+Font size is changed with **Ctrl + mouse wheel** or **Ctrl + +** / **Ctrl + -**; **Ctrl + 0** resets it. This changes the font itself, not the UI scale, and the setting is remembered between runs.
+
 HEX changes are saved with **Save as…**; the original file is never overwritten.
 
 ## Build
@@ -44,6 +47,15 @@ cmake --build out/build/x64-release --parallel
 ```
 
 The executable is written to `out/build/x64-release/FastBinary.exe`.
+
+Alternatively, use the ready-made scripts — they locate Visual Studio themselves (vswhere + vcvarsall), so a separate "x64 Native Tools" window is not needed and they work in CI:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\build-debug.ps1     # Debug → out\build\x64-debug
+powershell -ExecutionPolicy Bypass -File scripts\build-release.ps1  # Release → out\build\x64-release
+# Release plus a portable archive for GitHub Releases (out\package):
+powershell -ExecutionPolicy Bypass -File scripts\build-release.ps1 -Package -Version v0.2.0
+```
 
 ## Checks
 

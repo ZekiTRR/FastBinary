@@ -12,6 +12,7 @@
 - **Дизассемблер:** x86/x64 через Capstone, регулируемый интервал между колонками.
 - **Импорт, TLS и ресурсы:** библиотеки и функции, TLS-поля и callbacks, типы и размеры ресурсов.
 - **HEX:** синхронные байтовая и ASCII-панели, редактирование, переход по смещению и сохранение копии.
+- **Упаковщики:** упаковка открытого файла прямо из приложения — [Xenolith](https://github.com/HHT0rro/Xenolith) (вызывается неинтерактивно, без консольного мастера) и [UPX](https://github.com/upx/upx). Результат сохраняется рядом с оригиналом.
 - **Настройки:** тема, язык интерфейса (RU/EN), единицы размера.
 
 ![Сводка PE-файла](docs/images/quick-info.png)
@@ -30,6 +31,8 @@
 FastBinary.exe path\to\file.exe
 ```
 
+Размер шрифта меняется **Ctrl + колесико мыши**, **Ctrl + +** / **Ctrl + -**; **Ctrl + 0** сбрасывает его. Это именно размер шрифта, а не масштаб интерфейса — настройка сохраняется между запусками.
+
 Изменения в HEX сохраняются через **Save as…** — исходный файл не перезаписывается.
 
 ## Сборка
@@ -44,6 +47,15 @@ cmake --build out/build/x64-release --parallel
 ```
 
 Готовый файл: `out/build/x64-release/FastBinary.exe`.
+
+Либо через готовые скрипты — они сами находят Visual Studio (vswhere + vcvarsall), поэтому отдельное окно «x64 Native Tools» не нужно, и они подходят для CI:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\build-debug.ps1     # Debug → out\build\x64-debug
+powershell -ExecutionPolicy Bypass -File scripts\build-release.ps1  # Release → out\build\x64-release
+# Release + переносной архив для GitHub Releases (out\package):
+powershell -ExecutionPolicy Bypass -File scripts\build-release.ps1 -Package -Version v0.2.0
+```
 
 ## Проверки
 

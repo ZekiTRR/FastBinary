@@ -94,6 +94,9 @@ add_executable(FastBinary
 
 set_property(TARGET FastBinary PROPERTY CXX_STANDARD 26)
 
+# GUI-подсистема Windows: без консольного окна при запуске.
+set_target_properties(FastBinary PROPERTIES WIN32_EXECUTABLE ON)
+
 # Корень проекта в путях включений, чтобы работали include вида "WINAPI/TYPES.h"
 target_include_directories(FastBinary PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -110,6 +113,17 @@ target_link_libraries(FastBinary PRIVATE
 # Максимальный уровень предупреждений, но без превращения их в ошибки.
 target_compile_options(FastBinary PRIVATE /W4)
 target_compile_options(FastBinary PRIVATE $<$<CONFIG:Debug>:/DEBUG>)
+
+# Пакеры лежат в Packers/; копируем их рядом с FastBinary.exe, чтобы приложение
+# всегда находило их относительно собственного каталога (включая переносимую сборку).
+add_custom_command(TARGET FastBinary POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:FastBinary>/Packers"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_CURRENT_SOURCE_DIR}/Packers/xenolith.exe"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Packers/upx.exe"
+        "$<TARGET_FILE_DIR:FastBinary>/Packers"
+    COMMENT "Copying packers next to FastBinary.exe"
+)
 
 # Сквозная проверка: парсер, Capstone, вкладки и HEX-редактор без ручного GUI.
 add_executable(FastBinarySmoke
@@ -144,5 +158,5 @@ target_compile_options(FastBinarySmoke PRIVATE /W4)
 enable_testing()
 add_test(NAME FastBinarySmoke COMMAND FastBinarySmoke $<TARGET_FILE:FastBinary>)
 set_tests_properties(FastBinarySmoke PROPERTIES
-    ENVIRONMENT "QT_QPA_PLATFORM=offscreen;PATH=${QT_ROOT}/bin;$ENV{PATH}"
+    ENVIRONMENT "FB_DESKTOP_TEST=1;QT_QPA_PLATFORM=offscreen;PATH=${QT_ROOT}/bin;$ENV{PATH}"
 )

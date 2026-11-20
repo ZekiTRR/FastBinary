@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QFont>
 #include <QMainWindow>
 #include <memory>
 #include <vector>
@@ -13,6 +14,8 @@ class QTableWidget;
 class QLineEdit;
 class QLabel;
 class QListWidget;
+class QPlainTextEdit;
+class QProcess;
 class QProgressBar;
 class QPushButton;
 class QSlider;
@@ -30,13 +33,19 @@ public:
     bool loadFile(const QString& path);
 
 protected:
+    void closeEvent(QCloseEvent* event) override;
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dropEvent(QDropEvent* event) override;
+    bool eventFilter(QObject* watched, QEvent* event) override;
 
 private:
     void buildUi();
     QWidget* createPage(int index);
-    void updateAll();
+    void loadSettings();
+    void saveSettings();
+    void updatePage(int index);
+    void updateCurrentPage();
+    void markPagesDirty();
     void updateQuickInfo();
     void updateSections();
     void updateStrings();
@@ -52,6 +61,19 @@ private:
     void applyUnits();
     void openFileDialog();
 
+    // Размер шрифта (не масштаб): Ctrl+колёсико / Ctrl+± / Ctrl+0.
+    void changeFontSize(int delta);
+    void applyFonts();
+
+    // Вкладка Packers: сборка состояния, запуск выбранного упаковщика и разбор результата.
+    void updatePackers();
+    void updatePackerNote();
+    void startPack();
+    void appendPackChunk(const QString& chunk);
+    void finishPack(int exitCode, bool crashed);
+    [[nodiscard]] QString packerExecutable(const QString& key) const;
+    [[nodiscard]] QString defaultPackedPath(const QString& key) const;
+
     [[nodiscard]] QString text(const char* english, const char* russian) const;
     [[nodiscard]] QString formatSize(qulonglong bytes) const;
     [[nodiscard]] QString formatHex(qulonglong value, int digits = 0) const;
@@ -63,16 +85,27 @@ private:
     QString filePath_;
     QString language_ { "en" };
     QString units_ { "auto" };
+    QString theme_ { "auto" };
+    QString packer_ { "xenolith" };
+    QString defaultStyle_;
+    QString lastDir_;
+    QByteArray savedGeometry_;
+    int disasmSpacingSaved_ { 24 };
+    int fontDelta_ { 0 };
+    QFont baseAppFont_;
+    bool baseFontsCaptured_ { false };
+    bool stringsExtracted_ { false };
+    bool pageDirty_[10] {};
 
-    QToolButton* navButtons_[9] {};
-    QLabel* pageTitles_[9] {};
+    QToolButton* navButtons_[10] {};
+    QLabel* pageTitles_[10] {};
     QStackedWidget* stack_ { nullptr };
     QPushButton* openButton_ { nullptr };
     QLabel* fileLabel_ { nullptr };
     QLabel* statusLabel_ { nullptr };
 
-    QLabel* quickLabels_[10] {};
-    QLineEdit* quickValues_[10] {};
+    QLabel* quickLabels_[9] {};
+    QLineEdit* quickValues_[9] {};
 
     QLabel* totalEntropyLabel_ { nullptr };
     QLineEdit* totalEntropyValue_ { nullptr };
@@ -109,6 +142,20 @@ private:
     QComboBox* themeCombo_ { nullptr };
     QComboBox* languageCombo_ { nullptr };
     QComboBox* unitsCombo_ { nullptr };
+
+    // Вкладка Packers.
+    QFormLayout* packersForm_ { nullptr };
+    QLabel* packerLabels_[4] {};
+    QComboBox* packerCombo_ { nullptr };
+    QComboBox* xenolithProfileCombo_ { nullptr };
+    QLineEdit* xenolithExportsEdit_ { nullptr };
+    QLineEdit* packerOutputEdit_ { nullptr };
+    QPushButton* packButton_ { nullptr };
+    QLabel* packerNoteLabel_ { nullptr };
+    QPlainTextEdit* packerLog_ { nullptr };
+    QProcess* packProcess_ { nullptr };
+    QString packOutputPath_;
+    bool packRunning_ { false };
 
     HexEditor* hexEditor_ { nullptr };
 };

@@ -1,12 +1,15 @@
 #include <QApplication>
 #include <QComboBox>
 #include <QFileInfo>
+#include <QFontMetrics>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QStackedWidget>
-#include <QTableView>
 #include <QTableWidget>
+#include <QTableView>
+#include <QThread>
+#include <QWheelEvent>
 #include <QToolButton>
 
 #include <iostream>
@@ -31,6 +34,14 @@ void check(const bool condition, const std::string& message) {
     }
 }
 
+// Даёт очереди событий завершить repolish после смены темы/вкладки, чтобы grab был честным.
+void settle() {
+    for (int i = 0; i < 10; ++i) {
+        QApplication::processEvents();
+        QThread::msleep(15);
+    }
+}
+
 }
 
 int main(int argc, char* argv[]) {
@@ -38,6 +49,8 @@ int main(int argc, char* argv[]) {
         qputenv("QT_QPA_PLATFORM", "offscreen");
     }
     QApplication application(argc, argv);
+    application.setApplicationName("FastBinary");
+    application.setOrganizationName("FastBinary");
     if (argc < 2) {
         std::cerr << "Usage: FastBinarySmoke <path-to-pe>\n";
         return 2;
@@ -76,6 +89,13 @@ int main(int argc, char* argv[]) {
     check(window.loadFile(path), "MainWindow loads the PE file");
     window.show();
 
+    // Вкладки заполняются лениво — обходим их, чтобы данные попали в таблицы.
+    auto* stack = window.findChild<QStackedWidget*>();
+    for (int index = 1; index < 10; ++index) {
+        stack->setCurrentIndex(index);
+    }
+    stack->setCurrentIndex(0);
+
     const auto navButtons = window.findChildren<QToolButton*>();
     int navCount = 0;
     for (const QToolButton* button : navButtons) {
@@ -83,7 +103,17 @@ int main(int argc, char* argv[]) {
             ++navCount;
         }
     }
-    check(navCount == 9, "Sidebar contains nine tabs");
+    check(navCount == 10, "Sidebar contains ten tabs");
+
+    // Вкладка Packers: после обхода вкладок предложенный путь уже вычислен.
+    QLineEdit* packerOutput = nullptr;
+    for (QLineEdit* edit : window.findChildren<QLineEdit*>()) {
+        if (edit->text().endsWith(".xl.exe")) {
+            packerOutput = edit;
+            break;
+        }
+    }
+    check(packerOutput != nullptr, "Packers tab proposes an output path next to the original");
 
     QTableWidget* sections = nullptr;
     QTableWidget* strings = nullptr;
@@ -96,6 +126,23 @@ int main(int argc, char* argv[]) {
     check(sections && sections->rowCount() == static_cast<int>(pe->getSections().size()), "Sections tab shows parsed sections");
     check(strings && strings->columnCount() == 2, "Strings tab has only offset and string columns");
     check(disassembly && disassembly->rowCount() > 0, "Disasm tab shows Capstone instructions");
+
+    // Ctrl+колёсико меняет размер шрифта, но не масштабирует окно/виджеты.
+    if (sections) {
+        // Системный FixedFont может хранить pixelSize вместо pointSize — сравниваем реальную высоту.
+        const int fontBefore = QFontMetrics(sections->font()).height();
+        const int widthBefore = window.width();
+        const QPoint zeroDelta(0, 0);
+        QWheelEvent wheelUp(QPointF(100, 100), QPointF(100, 100), zeroDelta, QPoint(0, 120),
+            Qt::NoButton, Qt::ControlModifier, Qt::NoScrollPhase, false);
+        QApplication::sendEvent(sections, &wheelUp);
+        check(QFontMetrics(sections->font()).height() > fontBefore, "Ctrl+wheel increases the font size");
+        check(window.width() == widthBefore, "Changing the font does not resize the window");
+        QWheelEvent wheelDown(QPointF(100, 100), QPointF(100, 100), zeroDelta, QPoint(0, -120),
+            Qt::NoButton, Qt::ControlModifier, Qt::NoScrollPhase, false);
+        QApplication::sendEvent(sections, &wheelDown);
+        check(QFontMetrics(sections->font()).height() == fontBefore, "Ctrl+wheel restores the font size");
+    }
 
     if (argc > 2) {
         const QString screenshotDir = QString::fromLocal8Bit(argv[2]);
@@ -111,12 +158,27 @@ int main(int argc, char* argv[]) {
                 break;
             }
         }
-        QApplication::processEvents();
+        settle();
         window.grab().save(screenshotDir + "/fastbinary-quick.png");
-        for (int index : { 1, 3, 7, 8 }) {
+        for (int index : { 1, 3, 7, 8, 9 }) {
             window.findChild<QStackedWidget*>()->setCurrentIndex(index);
-            QApplication::processEvents();
+            settle();
             window.grab().save(screenshotDir + QString("/fastbinary-tab-%1.png").arg(index));
+        }
+        window.findChild<QStackedWidget*>()->setCurrentIndex(0);
+        settle();
+        // Светлая тема: все вкладки для сверки цветов.
+        for (QComboBox* combo : window.findChildren<QComboBox*>()) {
+            if (combo->findData("light") >= 0) {
+                combo->setCurrentIndex(combo->findData("light"));
+                break;
+            }
+        }
+        settle();
+        for (int index = 0; index < 10; ++index) {
+            window.findChild<QStackedWidget*>()->setCurrentIndex(index);
+            settle();
+            window.grab().save(screenshotDir + QString("/fastbinary-light-tab-%1.png").arg(index));
         }
         window.findChild<QStackedWidget*>()->setCurrentIndex(0);
     }
@@ -142,7 +204,7 @@ int main(int argc, char* argv[]) {
     }
 
     const auto combos = window.findChildren<QComboBox*>();
-    check(combos.size() == 3, "Settings contains only theme, language and size units");
+    check(combos.size() == 5, "UI contains theme, language, units, packer and profile combos");
     QComboBox* language = nullptr;
     QComboBox* units = nullptr;
     for (QComboBox* combo : combos) {
@@ -157,6 +219,10 @@ int main(int argc, char* argv[]) {
         units->setCurrentIndex(units->findData("bytes"));
         check(true, "Size units switch without errors");
     }
+
+    // Закрываем окно, чтобы сработал closeEvent (сохранение настроек, если оно не отключено).
+    window.close();
+    settle();
 
     std::cout << (failures == 0 ? "All smoke checks passed.\n" : "Smoke checks failed.\n");
     return failures == 0 ? 0 : 1;

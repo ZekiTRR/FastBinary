@@ -14,8 +14,10 @@ class HexEditor : public QWidget {
 public:
     explicit HexEditor(QWidget* parent = nullptr);
 
-    void setBytes(const std::vector<unsigned char>& bytes);
+    void setBytes(std::vector<unsigned char> bytes);
     void retranslate(bool russian);
+    //Высота строк должна расти вместе со шрифтом, иначе крупный текст обрезается.
+    void setRowHeightForFont(int delta);
 
     [[nodiscard]] bool isModified() const noexcept { return modified_; }
 

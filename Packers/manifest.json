@@ -1,0 +1,2150 @@
+{
+  "artifacts": [
+    {
+      "bytes": 2415616,
+      "name": "xenolith.exe",
+      "sha256": "ae19ed75ba9a13df11203f80d828d5d975ca6f15f8a6f8494a53cec5a22b11dc"
+    },
+    {
+      "bytes": 21302,
+      "name": "SUPPORT.md",
+      "sha256": "832b8e0aafe3fbd6cc9c9d38d418da9d268fe1c6950e7e2327978b8997f08362"
+    },
+    {
+      "bytes": 7504,
+      "name": "THREAT-MODEL.md",
+      "sha256": "cc9e87cf9cd5a8f8d0f2e900653d78f6f298f9ac66db7fa3a6b038d901de5129"
+    },
+    {
+      "bytes": 9588,
+      "name": "corpus-manifest.json",
+      "sha256": "3cfd84a277cc497c26cc1108539d98be6a251fa8f9f8ba06204bc06f01ae1efd"
+    },
+    {
+      "bytes": 1958,
+      "name": "compat-manifest.json",
+      "sha256": "e431a5b4216b8933d1053ad8e545d30ec38a2cb88f068d367b6a0bc66e219352"
+    },
+    {
+      "bytes": 1112,
+      "name": "g8_perf_baseline.json",
+      "sha256": "ea012b817a4611bedc1df2bd04ef499a7455b21bd3c8d81957dddc4b99cd9461"
+    },
+    {
+      "bytes": 3234,
+      "name": "gate-evidence.json",
+      "sha256": "0fc5b8ecb501bebbd538e6a55c99a7d0ab8c643dfa24851cac8b023c76fc93d9"
+    }
+  ],
+  "budgets": {
+    "override_used": false,
+    "source": "g8_perf_baseline.json",
+    "unmet": []
+  },
+  "generated_utc": "unix_epoch_seconds=1791604453",
+  "kernel_assisted": "absent (G7 out of scope for this release; no WDK/VM/signing/distro environment)",
+  "label": "v1.2.0-rc1-Windows",
+  "license_inventory": [
+    "(MIT OR Apache-2.0) AND Unicode-3.0",
+    "Apache-2.0 OR BSL-1.0",
+    "Apache-2.0 OR MIT",
+    "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT",
+    "Apache-2.0/MIT",
+    "BSD-2-Clause OR Apache-2.0 OR MIT",
+    "BSD-3-Clause",
+    "GPL-3.0-or-later",
+    "MIT",
+    "MIT / Apache-2.0",
+    "MIT OR Apache-2.0",
+    "MIT/Apache-2.0",
+    "Unlicense OR MIT",
+    "Zlib"
+  ],
+  "provenance": {
+    "cargo": "cargo 1.99.0 (5f94df478 2026-08-27)",
+    "git_commit": "2f14c14b341e1d10895e861fc69d00cd3a6d47d3",
+    "git_tree_dirty": true,
+    "host_target": "x86_64-pc-windows-msvc",
+    "rustc": "1.99.0",
+    "rustc_commit_hash": "b940084d7eb6a299eb4bfeb8e34901bc051e7ac4"
+  },
+  "release_level": "user-mode",
+  "sbom": {
+    "bomFormat": "CycloneDX",
+    "components": [
+      {
+        "bom-ref": "pkg:cargo/aead@0.5.2",
+        "name": "aead",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/aead@0.5.2",
+        "scope": "required",
+        "type": "library",
+        "version": "0.5.2"
+      },
+      {
+        "bom-ref": "pkg:cargo/allocator-api2@0.2.21",
+        "name": "allocator-api2",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/allocator-api2@0.2.21",
+        "scope": "required",
+        "type": "library",
+        "version": "0.2.21"
+      },
+      {
+        "bom-ref": "pkg:cargo/anstream@1.0.0",
+        "name": "anstream",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/anstream@1.0.0",
+        "scope": "required",
+        "type": "library",
+        "version": "1.0.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/anstyle@1.0.14",
+        "name": "anstyle",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/anstyle@1.0.14",
+        "scope": "required",
+        "type": "library",
+        "version": "1.0.14"
+      },
+      {
+        "bom-ref": "pkg:cargo/anstyle-parse@1.0.0",
+        "name": "anstyle-parse",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/anstyle-parse@1.0.0",
+        "scope": "required",
+        "type": "library",
+        "version": "1.0.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/anstyle-query@1.1.5",
+        "name": "anstyle-query",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/anstyle-query@1.1.5",
+        "scope": "required",
+        "type": "library",
+        "version": "1.1.5"
+      },
+      {
+        "bom-ref": "pkg:cargo/anstyle-wincon@3.0.11",
+        "name": "anstyle-wincon",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/anstyle-wincon@3.0.11",
+        "scope": "required",
+        "type": "library",
+        "version": "3.0.11"
+      },
+      {
+        "bom-ref": "pkg:cargo/anyhow@1.0.104",
+        "name": "anyhow",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/anyhow@1.0.104",
+        "scope": "required",
+        "type": "library",
+        "version": "1.0.104"
+      },
+      {
+        "bom-ref": "pkg:cargo/bitflags@2.13.1",
+        "name": "bitflags",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/bitflags@2.13.1",
+        "scope": "required",
+        "type": "library",
+        "version": "2.13.1"
+      },
+      {
+        "bom-ref": "pkg:cargo/block-buffer@0.10.4",
+        "name": "block-buffer",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/block-buffer@0.10.4",
+        "scope": "required",
+        "type": "library",
+        "version": "0.10.4"
+      },
+      {
+        "bom-ref": "pkg:cargo/cassowary@0.3.0",
+        "name": "cassowary",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/cassowary@0.3.0",
+        "scope": "required",
+        "type": "library",
+        "version": "0.3.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/castaway@0.2.4",
+        "name": "castaway",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/castaway@0.2.4",
+        "scope": "required",
+        "type": "library",
+        "version": "0.2.4"
+      },
+      {
+        "bom-ref": "pkg:cargo/cc@1.4.5",
+        "name": "cc",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/cc@1.4.5",
+        "scope": "required",
+        "type": "library",
+        "version": "1.4.5"
+      },
+      {
+        "bom-ref": "pkg:cargo/cfg-if@1.0.4",
+        "name": "cfg-if",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/cfg-if@1.0.4",
+        "scope": "required",
+        "type": "library",
+        "version": "1.0.4"
+      },
+      {
+        "bom-ref": "pkg:cargo/chacha20@0.9.1",
+        "name": "chacha20",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/chacha20@0.9.1",
+        "scope": "required",
+        "type": "library",
+        "version": "0.9.1"
+      },
+      {
+        "bom-ref": "pkg:cargo/chacha20poly1305@0.10.1",
+        "name": "chacha20poly1305",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/chacha20poly1305@0.10.1",
+        "scope": "required",
+        "type": "library",
+        "version": "0.10.1"
+      },
+      {
+        "bom-ref": "pkg:cargo/cipher@0.4.4",
+        "name": "cipher",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/cipher@0.4.4",
+        "scope": "required",
+        "type": "library",
+        "version": "0.4.4"
+      },
+      {
+        "bom-ref": "pkg:cargo/clap@4.6.6",
+        "name": "clap",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/clap@4.6.6",
+        "scope": "required",
+        "type": "library",
+        "version": "4.6.6"
+      },
+      {
+        "bom-ref": "pkg:cargo/clap_builder@4.6.6",
+        "name": "clap_builder",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/clap_builder@4.6.6",
+        "scope": "required",
+        "type": "library",
+        "version": "4.6.6"
+      },
+      {
+        "bom-ref": "pkg:cargo/clap_derive@4.6.4",
+        "name": "clap_derive",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/clap_derive@4.6.4",
+        "scope": "required",
+        "type": "library",
+        "version": "4.6.4"
+      },
+      {
+        "bom-ref": "pkg:cargo/clap_lex@1.1.0",
+        "name": "clap_lex",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/clap_lex@1.1.0",
+        "scope": "required",
+        "type": "library",
+        "version": "1.1.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/colorchoice@1.0.5",
+        "name": "colorchoice",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/colorchoice@1.0.5",
+        "scope": "required",
+        "type": "library",
+        "version": "1.0.5"
+      },
+      {
+        "bom-ref": "pkg:cargo/compact_str@0.8.2",
+        "name": "compact_str",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/compact_str@0.8.2",
+        "scope": "required",
+        "type": "library",
+        "version": "0.8.2"
+      },
+      {
+        "bom-ref": "pkg:cargo/cpufeatures@0.2.17",
+        "name": "cpufeatures",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/cpufeatures@0.2.17",
+        "scope": "required",
+        "type": "library",
+        "version": "0.2.17"
+      },
+      {
+        "bom-ref": "pkg:cargo/crossterm@0.28.1",
+        "name": "crossterm",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/crossterm@0.28.1",
+        "scope": "required",
+        "type": "library",
+        "version": "0.28.1"
+      },
+      {
+        "bom-ref": "pkg:cargo/crossterm_winapi@0.9.1",
+        "name": "crossterm_winapi",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/crossterm_winapi@0.9.1",
+        "scope": "required",
+        "type": "library",
+        "version": "0.9.1"
+      },
+      {
+        "bom-ref": "pkg:cargo/crypto-common@0.1.7",
+        "name": "crypto-common",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/crypto-common@0.1.7",
+        "scope": "required",
+        "type": "library",
+        "version": "0.1.7"
+      },
+      {
+        "bom-ref": "pkg:cargo/darling@0.24.1",
+        "name": "darling",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/darling@0.24.1",
+        "scope": "required",
+        "type": "library",
+        "version": "0.24.1"
+      },
+      {
+        "bom-ref": "pkg:cargo/darling_core@0.24.1",
+        "name": "darling_core",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/darling_core@0.24.1",
+        "scope": "required",
+        "type": "library",
+        "version": "0.24.1"
+      },
+      {
+        "bom-ref": "pkg:cargo/darling_macro@0.24.1",
+        "name": "darling_macro",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/darling_macro@0.24.1",
+        "scope": "required",
+        "type": "library",
+        "version": "0.24.1"
+      },
+      {
+        "bom-ref": "pkg:cargo/digest@0.10.7",
+        "name": "digest",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/digest@0.10.7",
+        "scope": "required",
+        "type": "library",
+        "version": "0.10.7"
+      },
+      {
+        "bom-ref": "pkg:cargo/eh-dll@0.1.0",
+        "name": "eh-dll",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "workspace"
+          }
+        ],
+        "purl": "pkg:cargo/eh-dll@0.1.0",
+        "scope": "required",
+        "type": "library",
+        "version": "0.1.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/either@1.18.0",
+        "name": "either",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/either@1.18.0",
+        "scope": "required",
+        "type": "library",
+        "version": "1.18.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/equivalent@1.0.2",
+        "name": "equivalent",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/equivalent@1.0.2",
+        "scope": "required",
+        "type": "library",
+        "version": "1.0.2"
+      },
+      {
+        "bom-ref": "pkg:cargo/errno@0.2.8",
+        "name": "errno",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/errno@0.2.8",
+        "scope": "required",
+        "type": "library",
+        "version": "0.2.8"
+      },
+      {
+        "bom-ref": "pkg:cargo/errno@0.3.14",
+        "name": "errno",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/errno@0.3.14",
+        "scope": "required",
+        "type": "library",
+        "version": "0.3.14"
+      },
+      {
+        "bom-ref": "pkg:cargo/errno-dragonfly@0.1.2",
+        "name": "errno-dragonfly",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/errno-dragonfly@0.1.2",
+        "scope": "required",
+        "type": "library",
+        "version": "0.1.2"
+      },
+      {
+        "bom-ref": "pkg:cargo/find-msvc-tools@0.1.12",
+        "name": "find-msvc-tools",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/find-msvc-tools@0.1.12",
+        "scope": "required",
+        "type": "library",
+        "version": "0.1.12"
+      },
+      {
+        "bom-ref": "pkg:cargo/foldhash@0.1.5",
+        "name": "foldhash",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/foldhash@0.1.5",
+        "scope": "required",
+        "type": "library",
+        "version": "0.1.5"
+      },
+      {
+        "bom-ref": "pkg:cargo/generic-array@0.14.7",
+        "name": "generic-array",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/generic-array@0.14.7",
+        "scope": "required",
+        "type": "library",
+        "version": "0.14.7"
+      },
+      {
+        "bom-ref": "pkg:cargo/getrandom@0.2.17",
+        "name": "getrandom",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/getrandom@0.2.17",
+        "scope": "required",
+        "type": "library",
+        "version": "0.2.17"
+      },
+      {
+        "bom-ref": "pkg:cargo/hashbrown@0.15.5",
+        "name": "hashbrown",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/hashbrown@0.15.5",
+        "scope": "required",
+        "type": "library",
+        "version": "0.15.5"
+      },
+      {
+        "bom-ref": "pkg:cargo/heck@0.5.0",
+        "name": "heck",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/heck@0.5.0",
+        "scope": "required",
+        "type": "library",
+        "version": "0.5.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/hello-dll@0.1.0",
+        "name": "hello-dll",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "workspace"
+          }
+        ],
+        "purl": "pkg:cargo/hello-dll@0.1.0",
+        "scope": "required",
+        "type": "library",
+        "version": "0.1.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/hello-exe@0.1.0",
+        "name": "hello-exe",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "workspace"
+          }
+        ],
+        "purl": "pkg:cargo/hello-exe@0.1.0",
+        "scope": "required",
+        "type": "library",
+        "version": "0.1.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/hex@0.4.3",
+        "name": "hex",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/hex@0.4.3",
+        "scope": "required",
+        "type": "library",
+        "version": "0.4.3"
+      },
+      {
+        "bom-ref": "pkg:cargo/hmac@0.12.1",
+        "name": "hmac",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/hmac@0.12.1",
+        "scope": "required",
+        "type": "library",
+        "version": "0.12.1"
+      },
+      {
+        "bom-ref": "pkg:cargo/iced-x86@1.21.0",
+        "name": "iced-x86",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/iced-x86@1.21.0",
+        "scope": "required",
+        "type": "library",
+        "version": "1.21.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/ident_case@1.0.1",
+        "name": "ident_case",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/ident_case@1.0.1",
+        "scope": "required",
+        "type": "library",
+        "version": "1.0.1"
+      },
+      {
+        "bom-ref": "pkg:cargo/indoc@2.0.7",
+        "name": "indoc",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/indoc@2.0.7",
+        "scope": "required",
+        "type": "library",
+        "version": "2.0.7"
+      },
+      {
+        "bom-ref": "pkg:cargo/inout@0.1.4",
+        "name": "inout",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/inout@0.1.4",
+        "scope": "required",
+        "type": "library",
+        "version": "0.1.4"
+      },
+      {
+        "bom-ref": "pkg:cargo/instability@0.3.13",
+        "name": "instability",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/instability@0.3.13",
+        "scope": "required",
+        "type": "library",
+        "version": "0.3.13"
+      },
+      {
+        "bom-ref": "pkg:cargo/is_terminal_polyfill@1.70.2",
+        "name": "is_terminal_polyfill",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/is_terminal_polyfill@1.70.2",
+        "scope": "required",
+        "type": "library",
+        "version": "1.70.2"
+      },
+      {
+        "bom-ref": "pkg:cargo/itertools@0.13.0",
+        "name": "itertools",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/itertools@0.13.0",
+        "scope": "required",
+        "type": "library",
+        "version": "0.13.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/itoa@1.0.18",
+        "name": "itoa",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/itoa@1.0.18",
+        "scope": "required",
+        "type": "library",
+        "version": "1.0.18"
+      },
+      {
+        "bom-ref": "pkg:cargo/jni-host@0.1.0",
+        "name": "jni-host",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "workspace"
+          }
+        ],
+        "purl": "pkg:cargo/jni-host@0.1.0",
+        "scope": "required",
+        "type": "library",
+        "version": "0.1.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/jni-rust@0.1.0",
+        "name": "jni-rust",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "workspace"
+          }
+        ],
+        "purl": "pkg:cargo/jni-rust@0.1.0",
+        "scope": "required",
+        "type": "library",
+        "version": "0.1.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/lazy_static@1.5.0",
+        "name": "lazy_static",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/lazy_static@1.5.0",
+        "scope": "required",
+        "type": "library",
+        "version": "1.5.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/libc@0.2.189",
+        "name": "libc",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/libc@0.2.189",
+        "scope": "required",
+        "type": "library",
+        "version": "0.2.189"
+      },
+      {
+        "bom-ref": "pkg:cargo/license-toy@0.1.0",
+        "name": "license-toy",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "workspace"
+          }
+        ],
+        "purl": "pkg:cargo/license-toy@0.1.0",
+        "scope": "required",
+        "type": "library",
+        "version": "0.1.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/linux-raw-sys@0.4.15",
+        "name": "linux-raw-sys",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/linux-raw-sys@0.4.15",
+        "scope": "required",
+        "type": "library",
+        "version": "0.4.15"
+      },
+      {
+        "bom-ref": "pkg:cargo/lock_api@0.4.14",
+        "name": "lock_api",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/lock_api@0.4.14",
+        "scope": "required",
+        "type": "library",
+        "version": "0.4.14"
+      },
+      {
+        "bom-ref": "pkg:cargo/log@0.4.34",
+        "name": "log",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/log@0.4.34",
+        "scope": "required",
+        "type": "library",
+        "version": "0.4.34"
+      },
+      {
+        "bom-ref": "pkg:cargo/lru@0.12.5",
+        "name": "lru",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/lru@0.12.5",
+        "scope": "required",
+        "type": "library",
+        "version": "0.12.5"
+      },
+      {
+        "bom-ref": "pkg:cargo/memchr@2.8.3",
+        "name": "memchr",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/memchr@2.8.3",
+        "scope": "required",
+        "type": "library",
+        "version": "2.8.3"
+      },
+      {
+        "bom-ref": "pkg:cargo/mio@1.2.3",
+        "name": "mio",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/mio@1.2.3",
+        "scope": "required",
+        "type": "library",
+        "version": "1.2.3"
+      },
+      {
+        "bom-ref": "pkg:cargo/once_cell_polyfill@1.70.2",
+        "name": "once_cell_polyfill",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/once_cell_polyfill@1.70.2",
+        "scope": "required",
+        "type": "library",
+        "version": "1.70.2"
+      },
+      {
+        "bom-ref": "pkg:cargo/opaque-debug@0.3.1",
+        "name": "opaque-debug",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/opaque-debug@0.3.1",
+        "scope": "required",
+        "type": "library",
+        "version": "0.3.1"
+      },
+      {
+        "bom-ref": "pkg:cargo/parking_lot@0.12.5",
+        "name": "parking_lot",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/parking_lot@0.12.5",
+        "scope": "required",
+        "type": "library",
+        "version": "0.12.5"
+      },
+      {
+        "bom-ref": "pkg:cargo/parking_lot_core@0.9.12",
+        "name": "parking_lot_core",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/parking_lot_core@0.9.12",
+        "scope": "required",
+        "type": "library",
+        "version": "0.9.12"
+      },
+      {
+        "bom-ref": "pkg:cargo/paste@1.0.15",
+        "name": "paste",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/paste@1.0.15",
+        "scope": "required",
+        "type": "library",
+        "version": "1.0.15"
+      },
+      {
+        "bom-ref": "pkg:cargo/poly1305@0.8.0",
+        "name": "poly1305",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/poly1305@0.8.0",
+        "scope": "required",
+        "type": "library",
+        "version": "0.8.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/ppv-lite86@0.2.21",
+        "name": "ppv-lite86",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/ppv-lite86@0.2.21",
+        "scope": "required",
+        "type": "library",
+        "version": "0.2.21"
+      },
+      {
+        "bom-ref": "pkg:cargo/proc-macro2@1.0.107",
+        "name": "proc-macro2",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/proc-macro2@1.0.107",
+        "scope": "required",
+        "type": "library",
+        "version": "1.0.107"
+      },
+      {
+        "bom-ref": "pkg:cargo/quote@1.0.47",
+        "name": "quote",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/quote@1.0.47",
+        "scope": "required",
+        "type": "library",
+        "version": "1.0.47"
+      },
+      {
+        "bom-ref": "pkg:cargo/rand@0.8.8",
+        "name": "rand",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/rand@0.8.8",
+        "scope": "required",
+        "type": "library",
+        "version": "0.8.8"
+      },
+      {
+        "bom-ref": "pkg:cargo/rand_chacha@0.3.1",
+        "name": "rand_chacha",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/rand_chacha@0.3.1",
+        "scope": "required",
+        "type": "library",
+        "version": "0.3.1"
+      },
+      {
+        "bom-ref": "pkg:cargo/rand_core@0.6.4",
+        "name": "rand_core",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/rand_core@0.6.4",
+        "scope": "required",
+        "type": "library",
+        "version": "0.6.4"
+      },
+      {
+        "bom-ref": "pkg:cargo/ratatui@0.29.0",
+        "name": "ratatui",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/ratatui@0.29.0",
+        "scope": "required",
+        "type": "library",
+        "version": "0.29.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/redox_syscall@0.5.18",
+        "name": "redox_syscall",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/redox_syscall@0.5.18",
+        "scope": "required",
+        "type": "library",
+        "version": "0.5.18"
+      },
+      {
+        "bom-ref": "pkg:cargo/rustix@0.38.44",
+        "name": "rustix",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/rustix@0.38.44",
+        "scope": "required",
+        "type": "library",
+        "version": "0.38.44"
+      },
+      {
+        "bom-ref": "pkg:cargo/rustversion@1.0.23",
+        "name": "rustversion",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/rustversion@1.0.23",
+        "scope": "required",
+        "type": "library",
+        "version": "1.0.23"
+      },
+      {
+        "bom-ref": "pkg:cargo/ryu@1.0.23",
+        "name": "ryu",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/ryu@1.0.23",
+        "scope": "required",
+        "type": "library",
+        "version": "1.0.23"
+      },
+      {
+        "bom-ref": "pkg:cargo/scopeguard@1.2.0",
+        "name": "scopeguard",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/scopeguard@1.2.0",
+        "scope": "required",
+        "type": "library",
+        "version": "1.2.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/serde@1.0.229",
+        "name": "serde",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/serde@1.0.229",
+        "scope": "required",
+        "type": "library",
+        "version": "1.0.229"
+      },
+      {
+        "bom-ref": "pkg:cargo/serde_core@1.0.229",
+        "name": "serde_core",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/serde_core@1.0.229",
+        "scope": "required",
+        "type": "library",
+        "version": "1.0.229"
+      },
+      {
+        "bom-ref": "pkg:cargo/serde_derive@1.0.229",
+        "name": "serde_derive",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/serde_derive@1.0.229",
+        "scope": "required",
+        "type": "library",
+        "version": "1.0.229"
+      },
+      {
+        "bom-ref": "pkg:cargo/serde_json@1.0.151",
+        "name": "serde_json",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/serde_json@1.0.151",
+        "scope": "required",
+        "type": "library",
+        "version": "1.0.151"
+      },
+      {
+        "bom-ref": "pkg:cargo/sha2@0.10.9",
+        "name": "sha2",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/sha2@0.10.9",
+        "scope": "required",
+        "type": "library",
+        "version": "0.10.9"
+      },
+      {
+        "bom-ref": "pkg:cargo/shlex@2.0.1",
+        "name": "shlex",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/shlex@2.0.1",
+        "scope": "required",
+        "type": "library",
+        "version": "2.0.1"
+      },
+      {
+        "bom-ref": "pkg:cargo/signal-hook@0.3.18",
+        "name": "signal-hook",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/signal-hook@0.3.18",
+        "scope": "required",
+        "type": "library",
+        "version": "0.3.18"
+      },
+      {
+        "bom-ref": "pkg:cargo/signal-hook-mio@0.2.5",
+        "name": "signal-hook-mio",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/signal-hook-mio@0.2.5",
+        "scope": "required",
+        "type": "library",
+        "version": "0.2.5"
+      },
+      {
+        "bom-ref": "pkg:cargo/signal-hook-registry@1.4.8",
+        "name": "signal-hook-registry",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/signal-hook-registry@1.4.8",
+        "scope": "required",
+        "type": "library",
+        "version": "1.4.8"
+      },
+      {
+        "bom-ref": "pkg:cargo/smallvec@1.16.0",
+        "name": "smallvec",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/smallvec@1.16.0",
+        "scope": "required",
+        "type": "library",
+        "version": "1.16.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/static_assertions@1.1.0",
+        "name": "static_assertions",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/static_assertions@1.1.0",
+        "scope": "required",
+        "type": "library",
+        "version": "1.1.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/strsim@0.11.1",
+        "name": "strsim",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/strsim@0.11.1",
+        "scope": "required",
+        "type": "library",
+        "version": "0.11.1"
+      },
+      {
+        "bom-ref": "pkg:cargo/strum@0.26.3",
+        "name": "strum",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/strum@0.26.3",
+        "scope": "required",
+        "type": "library",
+        "version": "0.26.3"
+      },
+      {
+        "bom-ref": "pkg:cargo/strum_macros@0.26.4",
+        "name": "strum_macros",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/strum_macros@0.26.4",
+        "scope": "required",
+        "type": "library",
+        "version": "0.26.4"
+      },
+      {
+        "bom-ref": "pkg:cargo/subtle@2.6.1",
+        "name": "subtle",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/subtle@2.6.1",
+        "scope": "required",
+        "type": "library",
+        "version": "2.6.1"
+      },
+      {
+        "bom-ref": "pkg:cargo/syn@2.0.119",
+        "name": "syn",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/syn@2.0.119",
+        "scope": "required",
+        "type": "library",
+        "version": "2.0.119"
+      },
+      {
+        "bom-ref": "pkg:cargo/syn@3.0.5",
+        "name": "syn",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/syn@3.0.5",
+        "scope": "required",
+        "type": "library",
+        "version": "3.0.5"
+      },
+      {
+        "bom-ref": "pkg:cargo/thiserror@2.0.20",
+        "name": "thiserror",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/thiserror@2.0.20",
+        "scope": "required",
+        "type": "library",
+        "version": "2.0.20"
+      },
+      {
+        "bom-ref": "pkg:cargo/thiserror-impl@2.0.20",
+        "name": "thiserror-impl",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/thiserror-impl@2.0.20",
+        "scope": "required",
+        "type": "library",
+        "version": "2.0.20"
+      },
+      {
+        "bom-ref": "pkg:cargo/typenum@1.20.1",
+        "name": "typenum",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/typenum@1.20.1",
+        "scope": "required",
+        "type": "library",
+        "version": "1.20.1"
+      },
+      {
+        "bom-ref": "pkg:cargo/unicode-ident@1.0.24",
+        "name": "unicode-ident",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/unicode-ident@1.0.24",
+        "scope": "required",
+        "type": "library",
+        "version": "1.0.24"
+      },
+      {
+        "bom-ref": "pkg:cargo/unicode-segmentation@1.13.3",
+        "name": "unicode-segmentation",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/unicode-segmentation@1.13.3",
+        "scope": "required",
+        "type": "library",
+        "version": "1.13.3"
+      },
+      {
+        "bom-ref": "pkg:cargo/unicode-truncate@1.1.0",
+        "name": "unicode-truncate",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/unicode-truncate@1.1.0",
+        "scope": "required",
+        "type": "library",
+        "version": "1.1.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/unicode-width@0.1.14",
+        "name": "unicode-width",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/unicode-width@0.1.14",
+        "scope": "required",
+        "type": "library",
+        "version": "0.1.14"
+      },
+      {
+        "bom-ref": "pkg:cargo/unicode-width@0.2.0",
+        "name": "unicode-width",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/unicode-width@0.2.0",
+        "scope": "required",
+        "type": "library",
+        "version": "0.2.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/universal-hash@0.5.1",
+        "name": "universal-hash",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/universal-hash@0.5.1",
+        "scope": "required",
+        "type": "library",
+        "version": "0.5.1"
+      },
+      {
+        "bom-ref": "pkg:cargo/utf8parse@0.2.2",
+        "name": "utf8parse",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/utf8parse@0.2.2",
+        "scope": "required",
+        "type": "library",
+        "version": "0.2.2"
+      },
+      {
+        "bom-ref": "pkg:cargo/version_check@0.9.5",
+        "name": "version_check",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/version_check@0.9.5",
+        "scope": "required",
+        "type": "library",
+        "version": "0.9.5"
+      },
+      {
+        "bom-ref": "pkg:cargo/wasi@0.11.1+wasi-snapshot-preview1",
+        "name": "wasi",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/wasi@0.11.1+wasi-snapshot-preview1",
+        "scope": "required",
+        "type": "library",
+        "version": "0.11.1+wasi-snapshot-preview1"
+      },
+      {
+        "bom-ref": "pkg:cargo/winapi@0.3.9",
+        "name": "winapi",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/winapi@0.3.9",
+        "scope": "required",
+        "type": "library",
+        "version": "0.3.9"
+      },
+      {
+        "bom-ref": "pkg:cargo/winapi-i686-pc-windows-gnu@0.4.0",
+        "name": "winapi-i686-pc-windows-gnu",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/winapi-i686-pc-windows-gnu@0.4.0",
+        "scope": "required",
+        "type": "library",
+        "version": "0.4.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/winapi-x86_64-pc-windows-gnu@0.4.0",
+        "name": "winapi-x86_64-pc-windows-gnu",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/winapi-x86_64-pc-windows-gnu@0.4.0",
+        "scope": "required",
+        "type": "library",
+        "version": "0.4.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/windows-link@0.2.1",
+        "name": "windows-link",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/windows-link@0.2.1",
+        "scope": "required",
+        "type": "library",
+        "version": "0.2.1"
+      },
+      {
+        "bom-ref": "pkg:cargo/windows-sys@0.59.0",
+        "name": "windows-sys",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/windows-sys@0.59.0",
+        "scope": "required",
+        "type": "library",
+        "version": "0.59.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/windows-sys@0.61.2",
+        "name": "windows-sys",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/windows-sys@0.61.2",
+        "scope": "required",
+        "type": "library",
+        "version": "0.61.2"
+      },
+      {
+        "bom-ref": "pkg:cargo/windows-targets@0.52.6",
+        "name": "windows-targets",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/windows-targets@0.52.6",
+        "scope": "required",
+        "type": "library",
+        "version": "0.52.6"
+      },
+      {
+        "bom-ref": "pkg:cargo/windows_aarch64_gnullvm@0.52.6",
+        "name": "windows_aarch64_gnullvm",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/windows_aarch64_gnullvm@0.52.6",
+        "scope": "required",
+        "type": "library",
+        "version": "0.52.6"
+      },
+      {
+        "bom-ref": "pkg:cargo/windows_aarch64_msvc@0.52.6",
+        "name": "windows_aarch64_msvc",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/windows_aarch64_msvc@0.52.6",
+        "scope": "required",
+        "type": "library",
+        "version": "0.52.6"
+      },
+      {
+        "bom-ref": "pkg:cargo/windows_i686_gnu@0.52.6",
+        "name": "windows_i686_gnu",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/windows_i686_gnu@0.52.6",
+        "scope": "required",
+        "type": "library",
+        "version": "0.52.6"
+      },
+      {
+        "bom-ref": "pkg:cargo/windows_i686_gnullvm@0.52.6",
+        "name": "windows_i686_gnullvm",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/windows_i686_gnullvm@0.52.6",
+        "scope": "required",
+        "type": "library",
+        "version": "0.52.6"
+      },
+      {
+        "bom-ref": "pkg:cargo/windows_i686_msvc@0.52.6",
+        "name": "windows_i686_msvc",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/windows_i686_msvc@0.52.6",
+        "scope": "required",
+        "type": "library",
+        "version": "0.52.6"
+      },
+      {
+        "bom-ref": "pkg:cargo/windows_x86_64_gnu@0.52.6",
+        "name": "windows_x86_64_gnu",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/windows_x86_64_gnu@0.52.6",
+        "scope": "required",
+        "type": "library",
+        "version": "0.52.6"
+      },
+      {
+        "bom-ref": "pkg:cargo/windows_x86_64_gnullvm@0.52.6",
+        "name": "windows_x86_64_gnullvm",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/windows_x86_64_gnullvm@0.52.6",
+        "scope": "required",
+        "type": "library",
+        "version": "0.52.6"
+      },
+      {
+        "bom-ref": "pkg:cargo/windows_x86_64_msvc@0.52.6",
+        "name": "windows_x86_64_msvc",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/windows_x86_64_msvc@0.52.6",
+        "scope": "required",
+        "type": "library",
+        "version": "0.52.6"
+      },
+      {
+        "bom-ref": "pkg:cargo/xenolith-cli@0.1.0",
+        "name": "xenolith-cli",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "workspace"
+          }
+        ],
+        "purl": "pkg:cargo/xenolith-cli@0.1.0",
+        "scope": "required",
+        "type": "library",
+        "version": "0.1.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/xenolith-crypto@0.1.0",
+        "name": "xenolith-crypto",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "workspace"
+          }
+        ],
+        "purl": "pkg:cargo/xenolith-crypto@0.1.0",
+        "scope": "required",
+        "type": "library",
+        "version": "0.1.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/xenolith-formats@0.1.0",
+        "name": "xenolith-formats",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "workspace"
+          }
+        ],
+        "purl": "pkg:cargo/xenolith-formats@0.1.0",
+        "scope": "required",
+        "type": "library",
+        "version": "0.1.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/xenolith-guard@0.1.0",
+        "name": "xenolith-guard",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "workspace"
+          }
+        ],
+        "purl": "pkg:cargo/xenolith-guard@0.1.0",
+        "scope": "required",
+        "type": "library",
+        "version": "0.1.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/xenolith-loader@0.1.0",
+        "name": "xenolith-loader",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "workspace"
+          }
+        ],
+        "purl": "pkg:cargo/xenolith-loader@0.1.0",
+        "scope": "required",
+        "type": "library",
+        "version": "0.1.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/xenolith-pack@0.1.0",
+        "name": "xenolith-pack",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "workspace"
+          }
+        ],
+        "purl": "pkg:cargo/xenolith-pack@0.1.0",
+        "scope": "required",
+        "type": "library",
+        "version": "0.1.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/xenolith-protocol@0.1.0",
+        "name": "xenolith-protocol",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "workspace"
+          }
+        ],
+        "purl": "pkg:cargo/xenolith-protocol@0.1.0",
+        "scope": "required",
+        "type": "library",
+        "version": "0.1.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/xenolith-vm@0.1.0",
+        "name": "xenolith-vm",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "workspace"
+          }
+        ],
+        "purl": "pkg:cargo/xenolith-vm@0.1.0",
+        "scope": "required",
+        "type": "library",
+        "version": "0.1.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/xl-loadhost@0.1.0",
+        "name": "xl-loadhost",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "workspace"
+          }
+        ],
+        "purl": "pkg:cargo/xl-loadhost@0.1.0",
+        "scope": "required",
+        "type": "library",
+        "version": "0.1.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/zerocopy@0.8.56",
+        "name": "zerocopy",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/zerocopy@0.8.56",
+        "scope": "required",
+        "type": "library",
+        "version": "0.8.56"
+      },
+      {
+        "bom-ref": "pkg:cargo/zerocopy-derive@0.8.56",
+        "name": "zerocopy-derive",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/zerocopy-derive@0.8.56",
+        "scope": "required",
+        "type": "library",
+        "version": "0.8.56"
+      },
+      {
+        "bom-ref": "pkg:cargo/zeroize@1.9.0",
+        "name": "zeroize",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/zeroize@1.9.0",
+        "scope": "required",
+        "type": "library",
+        "version": "1.9.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/zeroize_derive@1.5.0",
+        "name": "zeroize_derive",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/zeroize_derive@1.5.0",
+        "scope": "required",
+        "type": "library",
+        "version": "1.5.0"
+      },
+      {
+        "bom-ref": "pkg:cargo/zmij@1.0.23",
+        "name": "zmij",
+        "properties": [
+          {
+            "name": "cdx:xenolith:source",
+            "value": "registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "purl": "pkg:cargo/zmij@1.0.23",
+        "scope": "required",
+        "type": "library",
+        "version": "1.0.23"
+      }
+    ],
+    "licenses": [
+      {
+        "license": {
+          "id": "MIT OR Apache-2.0"
+        }
+      },
+      {
+        "license": {
+          "id": "MIT / Apache-2.0"
+        }
+      },
+      {
+        "license": {
+          "id": "MIT"
+        }
+      },
+      {
+        "license": {
+          "id": "Apache-2.0 OR MIT"
+        }
+      },
+      {
+        "license": {
+          "id": "GPL-3.0-or-later"
+        }
+      },
+      {
+        "license": {
+          "id": "MIT/Apache-2.0"
+        }
+      },
+      {
+        "license": {
+          "id": "Zlib"
+        }
+      },
+      {
+        "license": {
+          "id": "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT"
+        }
+      },
+      {
+        "license": {
+          "id": "Unlicense OR MIT"
+        }
+      },
+      {
+        "license": {
+          "id": "Apache-2.0 OR BSL-1.0"
+        }
+      },
+      {
+        "license": {
+          "id": "Apache-2.0/MIT"
+        }
+      },
+      {
+        "license": {
+          "id": "BSD-3-Clause"
+        }
+      },
+      {
+        "license": {
+          "id": "(MIT OR Apache-2.0) AND Unicode-3.0"
+        }
+      },
+      {
+        "license": {
+          "id": "BSD-2-Clause OR Apache-2.0 OR MIT"
+        }
+      }
+    ],
+    "metadata": {
+      "component": {
+        "bom-ref": "xenolith",
+        "name": "xenolith",
+        "type": "application",
+        "version": "v1.2.0-rc1-Windows"
+      }
+    },
+    "serialNumber": "urn:uuid:xenolith-v1.2.0-rc1-Windows",
+    "specVersion": "1.4",
+    "version": 1
+  },
+  "schema": 1,
+  "signing": "none (decision D2 2026-09-08); integrity = this manifest + sha256 list"
+}

@@ -153,6 +153,16 @@ private:
 
 }
 
+void HexEditor::setRowHeightForFont(const int delta) {
+    const int height = std::max(16, 22 + delta * 2);
+    for (QHeaderView* header : { hexView_->verticalHeader(), asciiView_->verticalHeader() }) {
+        header->setDefaultSectionSize(height);
+        for (int row = 0; row < header->count(); ++row) {
+            header->resizeSection(row, height);
+        }
+    }
+}
+
 HexEditor::HexEditor(QWidget* parent)
     : QWidget(parent) {
     auto* layout = new QVBoxLayout(this);
@@ -231,8 +241,8 @@ HexEditor::HexEditor(QWidget* parent)
     });
 }
 
-void HexEditor::setBytes(const std::vector<unsigned char>& bytes) {
-    bytes_ = bytes;
+void HexEditor::setBytes(std::vector<unsigned char> bytes) {
+    bytes_ = std::move(bytes);
     static_cast<HexModel*>(hexModel_)->reset();
     static_cast<AsciiModel*>(asciiModel_)->reset();
     modified_ = false;

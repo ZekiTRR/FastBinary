@@ -78,3 +78,6 @@ cmake-build-*/
 /.vs/
 /non_project_files/
 /non_project_asset/
+
+# Пакеры поставляются вместе с приложением — они нужны во время работы.
+!Packers/*.exe
